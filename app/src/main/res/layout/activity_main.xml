@@ -1,0 +1,45 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/AppTheme"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:layout_gravity="center"
+    android:background="@color/lightgrey">
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:smoothScrollbar="true"
+        android:layout_alignParentTop="true"
+        android:animationCache="false"
+        android:scrollingCache="false"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:dividerHeight="4dp"/>
+
+    <ListView
+        android:id="@+id/episodeLV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animationCache="false"
+        android:scrollingCache="false"
+        android:dividerHeight="0dp"
+        android:background="@color/white"
+        android:layout_alignParentBottom="true" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        android:translationY="-7dp"
+        android:layout_alignParentTop="true" />
+
+</RelativeLayout>

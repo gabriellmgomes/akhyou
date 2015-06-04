@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Akhyou!</string>
+    <string name="action_settings">Settings</string>
+    <string name="epi_select">Episode</string>
+    <string name="button">Launch</string>
+    <string name="movie">Movie</string>
+    <string name="reverse">Reverses list sorting</string>
+    <string name="reverseDesc">Resort List</string>
+    <string name="refreshDesc">Refresh</string>
+    <string name="searchDesc">Search</string>
+    <string name="settingsDesc">Settings</string>
+    <string name="fuckThisButton">I don\'t have one and can\'t be bothered</string>
+    <string name="allDoneButton">Submit</string>
+    <string name="fragment_text">Default Resolution</string>
+    <string name="buttonLowest">Lowest resolution</string>
+    <string name="buttonHighest">Highest resolution</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="dotdotdot">...</string>
+    <string name="kissanimeLogin">Login to KissAnime</string>
+    <string name="usernameHint">Kissanime Username</string>
+    <string name="passwordHint">Kissanime Password</string>
+    <string name="loginWithWebView">loginwithwebview</string>
+    <string name="animeimage">Anime thumbnail</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

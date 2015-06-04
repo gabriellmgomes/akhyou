@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen android:title="@string/kissanimeLogin" >
+        <!--
+    <EditTextPreference
+        android:key="usernamePreference"
+        android:title="@string/usernameHint"
+        android:defaultValue="akhyou_account"
+        android:inputType="textNoSuggestions"
+        android:singleLine="true"
+        />
+    <EditTextPreference
+        android:key="passwordPreference"
+        android:title="@string/passwordHint"
+        android:defaultValue="akhyoupassword"
+        android:inputType="textPassword"
+        android:singleLine="true"
+        /> -->
+    </PreferenceScreen>
+</PreferenceScreen>

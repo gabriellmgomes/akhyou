@@ -1,0 +1,11 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="actionBarStyle">@style/CustomActionBar</item>
+    </style>
+    <style name="CustomActionBar"
+        parent="Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="background">@color/akhyoured</item>
+        <item name="height">50dp</item>
+    </style>
+</resources>
