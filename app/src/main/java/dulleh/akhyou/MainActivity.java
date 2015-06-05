@@ -296,8 +296,7 @@ public class MainActivity extends ActionBarActivity {
     private void sendToDownloader (String sendData) {
         if (sendData != null) {
             Intent sendLink = new Intent(Intent.ACTION_VIEW);
-            Uri downloadFile = Uri.parse(sendData);
-            sendLink.setDataAndType(downloadFile, "download/*");
+            sendLink.setDataAndType(Uri.parse(sendData), "video/*");
             if (sendLink.resolveActivity(getPackageManager()) != null) {
                 startActivity(sendLink);
             }
