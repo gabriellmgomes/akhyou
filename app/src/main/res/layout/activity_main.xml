@@ -20,8 +20,8 @@
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
         android:divider="@null" android:dividerHeight="6dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:clipToPadding="false"
         android:listSelector="@android:color/transparent"/>
 
