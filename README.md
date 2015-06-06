@@ -1,5 +1,7 @@
 ![akhyou-try-try-again-sizetrim.png](https://bitbucket.org/repo/A9bqxR/images/1308259700-akhyou-try-try-again-sizetrim.png)
 
+
+[Progress Pics](https://drive.google.com/folderview?id=0B7yspWl2OIHOfldGUjJzZEI2bDMyNTQyczkwR0Fqb3psbDlhVVZjekFLN1NOcVFZMUZUSzQ&usp=sharing)
 # README #
 
 There's an apprelease.apk in the files. Just download and have a go.
