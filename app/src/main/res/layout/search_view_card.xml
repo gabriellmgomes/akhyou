@@ -5,15 +5,13 @@
     android:id="@+id/card_view"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    card_view:cardCornerRadius="2dp" >
+    card_view:cardCornerRadius="2dp">
 
     <RelativeLayout
         android:id="@+id/cardRelative"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="8dp"
-        android:paddingStart="8dp"
-        android:background="@drawable/card_selector">
+        android:background="@drawable/card_selector" >
 
             <ImageView
                 android:id="@+id/imageView"
@@ -40,7 +38,9 @@
                 android:layout_marginBottom="3dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginTop="6dp"/>
+                android:layout_marginTop="6dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"/>
 
             <TextView
                 android:id="@+id/descTextView"
@@ -55,7 +55,9 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:maxLines="5" />
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:maxLines="6" />
 
     </RelativeLayout>
 

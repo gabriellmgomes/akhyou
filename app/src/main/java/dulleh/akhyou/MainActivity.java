@@ -150,9 +150,9 @@ public class MainActivity extends ActionBarActivity {
                         listView.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.abc_fade_in));
                         episodesAdapter = new EpisodesAdapter(getApplicationContext(), currentAnime.getEpisodesList());
                         episodesListView.setAdapter(episodesAdapter);
-                        episodesListView.setVisibility(View.VISIBLE);
-                        episodesListView.startAnimation(slideIn);
                         episodesAdapter.notifyDataSetChanged();
+                        episodesListView.startAnimation(slideIn);
+                        episodesListView.setVisibility(View.VISIBLE);
                     } else {
                         new AnimerushEpisodeList().execute(currentAnime);
                     }
@@ -431,9 +431,9 @@ public class MainActivity extends ActionBarActivity {
             browsingOrSearching = 0;
             episodesAdapter = new EpisodesAdapter(getApplicationContext(), s.getEpisodesList());
             episodesListView.setAdapter(episodesAdapter);
-            episodesListView.setVisibility(View.VISIBLE);
-            episodesListView.startAnimation(slideIn);
             episodesAdapter.notifyDataSetChanged();
+            episodesListView.startAnimation(slideIn);
+            episodesListView.setVisibility(View.VISIBLE);
         }
     }
 

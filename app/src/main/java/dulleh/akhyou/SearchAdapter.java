@@ -56,7 +56,7 @@ public class SearchAdapter extends ArrayAdapter<AnimeObject>{
                 .load(imageURl)
                 .placeholder(android.R.drawable.stat_sys_download)
                 .error(R.drawable.error_image)
-                .resize((int) (224 * d * 0.4) , (int) (300 * d * 0.4))
+                .resize((int) (224 * d * 0.5) , (int) (300 * d * 0.5))
                 .centerCrop()
                 .into(viewHolder.imageView);
 
