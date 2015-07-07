@@ -11,7 +11,15 @@
         android:orderInCategory="100" app:showAsAction="ifRoom"
         android:icon="@drawable/refresh_img"    />
 
+    <item android:id="@+id/addOrRemoveFavourites" android:title="@string/addToFavouritesDesc"
+        android:orderInCategory="100" app:showAsAction="ifRoom"
+        android:icon="@drawable/empty_star"     />
+
+    <item android:id="@+id/showFavourites" android:title="@string/showFavouritesDesc"
+        android:orderInCategory="100" app:showAsAction="never"  />
+
     <item android:id="@+id/reverse" android:title="@string/reverseDesc"
         android:orderInCategory="100" app:showAsAction="ifRoom"
         android:icon="@drawable/reverse_img"    />
+
 </menu>

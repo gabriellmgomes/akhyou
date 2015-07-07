@@ -10,6 +10,9 @@
     <string name="reverseDesc">Resort List</string>
     <string name="refreshDesc">Refresh</string>
     <string name="searchDesc">Search</string>
+    <string name="showFavouritesDesc">Show favourites</string>
+    <string name="addToFavouritesDesc">Add to favourites</string>
+    <string name="removeFromFavouritesDesc">Remove from favourites</string>
     <string name="settingsDesc">Settings</string>
     <string name="fuckThisButton">I don\'t have one and can\'t be bothered</string>
     <string name="allDoneButton">Submit</string>

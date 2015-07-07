@@ -1,4 +1,4 @@
-package dulleh.akhyou;
+package dulleh.akhyou.Anime;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,9 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import dulleh.akhyou.Anime.AnimeObject;
+import dulleh.akhyou.R;
 
 public class SearchAdapter extends ArrayAdapter<AnimeObject>{
     private final Context context;

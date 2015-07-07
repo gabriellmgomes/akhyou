@@ -1,6 +1,8 @@
-package dulleh.akhyou;
+package dulleh.akhyou.Anime;
 
 import java.util.ArrayList;
+
+import dulleh.akhyou.Episodes.EpisodeObject;
 
 /**
  * Created by Khwaja on 22/03/2015.

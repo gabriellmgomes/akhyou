@@ -1,7 +1,6 @@
-package dulleh.akhyou;
+package dulleh.akhyou.Episodes;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import dulleh.akhyou.Episodes.EpisodeObject;
+import dulleh.akhyou.R;
 
 public class EpisodesAdapter extends ArrayAdapter<EpisodeObject> {
     private final Context context;

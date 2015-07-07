@@ -32,6 +32,14 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import dulleh.akhyou.Anime.AnimeObject;
+import dulleh.akhyou.Anime.SearchAdapter;
+import dulleh.akhyou.Episodes.AlternateObjects;
+import dulleh.akhyou.Episodes.EpisodeObject;
+import dulleh.akhyou.Episodes.EpisodesAdapter;
 
 public class MainActivity extends ActionBarActivity {
     private AnimeObject currentAnime;
@@ -43,14 +51,18 @@ public class MainActivity extends ActionBarActivity {
     int fortySixDP, browsingOrSearching;
 
     private ProgressBar progressBar;
-    private ListView listView;
+
     private ListView episodesListView;
-    MenuItem reverse;
+
+    private ListView listView;
+
     private SearchView searchView;
     private Animation slideIn;
     private Animation slideOut;
 
     private SharedPreferences.Editor editor;
+    private SharedPreferences sharedPrefs;
+    private Menu menu;
 
     private void showToast(String toastText) {
         try {Looper.prepare();}catch (Exception e){e.printStackTrace();}
@@ -63,18 +75,32 @@ public class MainActivity extends ActionBarActivity {
         currentAnime.createGenreList();
     }
 
+    private void updateFaveButton () {
+        MenuItem addOrRemoveFavourites = menu.findItem(R.id.addOrRemoveFavourites);
+        if (sharedPrefs.getStringSet("favourites", new HashSet<String>()).contains(currentAnime.getLink())) {
+            addOrRemoveFavourites.setTitle(R.string.removeFromFavouritesDesc);
+            addOrRemoveFavourites.setIcon(R.drawable.star);
+        } else {
+            addOrRemoveFavourites.setTitle(R.string.addToFavouritesDesc);
+            addOrRemoveFavourites.setIcon(R.drawable.empty_star);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SharedPreferences sharedPrefs = getPreferences(MODE_PRIVATE);
+
+        sharedPrefs = getPreferences(MODE_PRIVATE);
         editor = sharedPrefs.edit();
         editor.apply();
 
+        listView = (ListView) findViewById(R.id.listView);
         episodesListView = (ListView) findViewById(R.id.episodeLV);
-        episodesListView.setVisibility(View.INVISIBLE);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
+        episodesListView.setVisibility(View.INVISIBLE);
         newAnimeObject();
 
         episodesAdapter = new EpisodesAdapter(getApplicationContext(), currentAnime.getEpisodesList());
@@ -91,10 +117,7 @@ public class MainActivity extends ActionBarActivity {
         fortySixDP = (int) (46 * d);
         fromSearch = false;
 
-        reverse = (MenuItem) findViewById(R.id.reverse);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
-        listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(searchAdapter);
         episodesListView.setVisibility(View.INVISIBLE);
 
@@ -160,6 +183,7 @@ public class MainActivity extends ActionBarActivity {
                 searchView.clearFocus();
             }
         });
+
         episodesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -169,6 +193,7 @@ public class MainActivity extends ActionBarActivity {
 
             }
         });
+
         episodesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -205,7 +230,9 @@ public class MainActivity extends ActionBarActivity {
         MenuItem searchItem = menu.findItem(R.id.search);
         searchView = (SearchView) searchItem.getActionView();
         searchView.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        searchView.setIconifiedByDefault(false);
         searchView.setQueryHint("Search");
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -214,18 +241,26 @@ public class MainActivity extends ActionBarActivity {
                     searchQ = search;
                     try {
                         new AnimerushSearch().execute(searchQ);
-                    }catch (Exception e) {e.printStackTrace(); showToast("Search failed.");}
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        showToast("Search failed.");
+                    }
                 }
                 searchView.clearFocus();
                 return true;
             }
+
             @Override
             public boolean onQueryTextChange(String s) {
                 return false;
             }
         });
+
+        this.menu = menu;
+        updateFaveButton();
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -280,7 +315,62 @@ public class MainActivity extends ActionBarActivity {
             return false;
         }
 
+        if (id == R.id.showFavourites) {
+            final ArrayList<String> favourites = new ArrayList<>();
+            for (String s : sharedPrefs.getStringSet("favourites", new HashSet<String>(0))) {
+                favourites.add(s);
+            }
+            final ArrayAdapter<String> favouritesAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.alternates_item, favourites);
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+            alertDialog.setTitle("Favourites");
+                alertDialog.setAdapter(favouritesAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        currentAnime = new AnimeObject();
+                        currentAnime.setLink(favourites.get(which));
+                        fromSearch = false;
+                        if (currentAnime.getEpisodesList() != null) {
+                            progressBar.setVisibility(View.INVISIBLE);
+                            browsingOrSearching = 0;
+                            listView.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.abc_fade_in));
+                            episodesAdapter = new EpisodesAdapter(getApplicationContext(), currentAnime.getEpisodesList());
+                            episodesListView.setAdapter(episodesAdapter);
+                            episodesAdapter.notifyDataSetChanged();
+                            episodesListView.startAnimation(slideIn);
+                            episodesListView.setVisibility(View.VISIBLE);
+                        } else {
+                            new AnimerushEpisodeList().execute(currentAnime);
+                        }
+                        // }
+                        searchView.clearFocus();
+                    }
+                });
+            alertDialog.create();
+            alertDialog.show();
+        }
+
+        if (id == R.id.addOrRemoveFavourites) {
+            Set<String> favourites = new HashSet<>(sharedPrefs.getStringSet("favourites", new HashSet<String>())) ;
+            if (favourites.contains(currentAnime.getLink())) {
+                favourites.remove(currentAnime.getLink());
+                showToast("Removed from favourites.");
+            } else {
+                favourites.add(currentAnime.getLink());
+                showToast("Added to favourites.");
+            }
+            editor.putStringSet("favourites", favourites);
+            editor.apply();
+            updateFaveButton();
+        }
+
         return super.onOptionsItemSelected(item);
+
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
+        updateFaveButton();
+        return true;
     }
 
     private void sendToPlayer (String sendData) {

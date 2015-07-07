@@ -1,4 +1,4 @@
-package dulleh.akhyou;
+package dulleh.akhyou.Episodes;
 
 /**
  * Created by Khwaja on 01/03/2015.
