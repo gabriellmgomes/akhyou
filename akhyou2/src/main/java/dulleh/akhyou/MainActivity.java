@@ -1,33 +1,70 @@
 package dulleh.akhyou;
 
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.FrameLayout;
 
-public class MainActivity extends ActionBarActivity {
+import de.greenrobot.event.EventBus;
+import dulleh.akhyou.Episodes.EpisodesFragment;
+import dulleh.akhyou.Search.SearchFragment;
+import dulleh.akhyou.Utils.OpenAnimeEvent;
+import dulleh.akhyou.Utils.SnackbarEvent;
+
+public class MainActivity extends AppCompatActivity {
+    private android.support.v4.app.FragmentManager fragmentManager;
+    private FrameLayout parentLayout;
+    public String SEARCH_FRAGMENT = "SEA";
+    public String EPISODES_FRAGMENT = "EPI";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+
+        fragmentManager = getSupportFragmentManager();
+        parentLayout = (FrameLayout) findViewById(R.id.container);
+
+        if (savedInstanceState == null) {
+            fragmentManager
+                .beginTransaction()
+                .add(R.id.container, new SearchFragment(), SEARCH_FRAGMENT)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+        }
+
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void onEvent (SnackbarEvent event) {
+        if (event.actionTitle == null) {
+            Snackbar.make(parentLayout, event.message, event.duration)
+                    .show();
+        } else {
+            Snackbar.make(parentLayout, event.message, event.duration)
+                .setAction(event.actionTitle, event.onClickListener)
+                .setActionTextColor(event.actionColor)
+                .show();
+        }
+    }
 
-        return super.onOptionsItemSelected(item);
+    public void onEvent (OpenAnimeEvent event) {
+        fragmentManager
+                .beginTransaction()
+                .addToBackStack(SEARCH_FRAGMENT)
+                .setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right)
+                .replace(R.id.container, new EpisodesFragment(), EPISODES_FRAGMENT)
+                .commit();
     }
 
 }

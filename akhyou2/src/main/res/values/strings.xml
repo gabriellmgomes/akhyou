@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">Akhyou!</string>
+
     <string name="action_settings">Settings</string>
+
+    <string name="imageContentDesc">Anime poster</string>
+
+    <string name="testTitle">Hyouka</string>
+    <string name="testDesc">Oreki Hotaro is a high school boy, who always acts passively. One day, he enters "Koten Bu (Classic Literature Club)" as recommended by his elder sister. There he meets Chitanda Eru, Fukube Satoshi, and Ibara Mayaka. Chitanda is a calm beautiful girl but she turns into an embodiment of curiosity once she says, "I'm interested in it (Watashi, Kininarimasu)". Fukube is a smiling boy with a fantastic memory, he never deduces anything on his own. Ibara is a short girl and is strict with others and herself. She loves Fukube, but he always dodges her approaches. They begin to investigate a case that occurred 33 years ago. Hints of the mystery are buried in an old collection of works of the former members of Koten Club. The collection is titled "Hyouka".</string>
+    <string name="testUrl">http://www.animerush.tv/anime/hyouka</string>
+    <string name="testImageUrl">http://www.animerush.tv/anime-images-big/hyouka.jpg</string>
+    <string name="testEpisodeTitle">Episode 1</string>
+    <string name="testEpisodeUrl">http://www.animerush.tv/hyouka-episode-1/mirror-283153/</string>
+    <string name="testSourceTitle">Mp4Upload SUBBED</string>
+    <string name="testSourceUrl">http://www6.mp4upload.com:182/d/sgxt5lsdz3b4quuolsuaypswicaihpuuhvjaxciv2zeqxpiig7zm6tgq/video.mp4</string>
+    <string name="testGenre1">Mystery</string>
+    <string name="testGenre2">School</string>
+
+
 </resources>
