@@ -1,37 +1,36 @@
-package dulleh.akhyou.Search;
+package dulleh.akhyou.Episodes;
 
 import android.os.Bundle;
 
 import de.greenrobot.event.EventBus;
+import dulleh.akhyou.Episodes.Providers.EpisodesProvider;
+import dulleh.akhyou.Episodes.Providers.FakeEpisodesProvider;
 import dulleh.akhyou.Models.Anime;
-import dulleh.akhyou.Search.Providers.AnimeRushSearchProvider;
-import dulleh.akhyou.Search.Providers.SearchProvider;
-import dulleh.akhyou.Utils.SearchEvent;
+import dulleh.akhyou.Utils.OpenAnimeEvent;
 import nucleus.presenter.RxPresenter;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
-public class SearchPresenter extends RxPresenter<SearchFragment> {
+public class EpisodesPresenter extends RxPresenter<EpisodesFragment>{
     private Subscription subscription;
-    private SearchProvider searchProvider;
-    private String searchTerm;
+    private EpisodesProvider episodesProvider;
+    private String lastUrl;
 
     @Override
     protected void onCreate(Bundle savedState) {
         super.onCreate(savedState);
 
-        if (searchProvider == null) {
-            searchProvider = new AnimeRushSearchProvider();
+        if (episodesProvider == null) {
+            episodesProvider = new FakeEpisodesProvider();
         }
 
     }
 
     @Override
-    protected void onTakeView(SearchFragment view) {
+    protected void onTakeView(EpisodesFragment view) {
         super.onTakeView(view);
         EventBus.getDefault().registerSticky(this);
     }
@@ -45,35 +44,31 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        searchProvider = null;
+        episodesProvider = null;
         subscription.unsubscribe();
     }
 
-    public void onEvent (SearchEvent event) {
-        this.searchTerm = event.searchTerm;
-        search();
+    public void onEvent (OpenAnimeEvent event) {
+        this.lastUrl = event.anime.getUrl();
+        fetchAnime();
     }
 
-    public void search () {
+    public void fetchAnime () {
         if (subscription != null) {
             if (!subscription.isUnsubscribed()) {
                 subscription.unsubscribe();
             }
         }
-        subscription = Observable.defer(new Func0<Observable<Anime[]>>() {
-            @Override
-            public Observable<Anime[]> call() {
-                return Observable.just(searchProvider.searchFor(searchTerm));
-            }
-        })
+
+        subscription = Observable.just(episodesProvider.fetchAnime(lastUrl))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.deliverLatestCache())
-                .subscribe(new Subscriber<Anime[]>() {
+                .subscribe(new Subscriber<Anime>() {
                     @Override
-                    public void onNext(Anime[] animes) {
+                    public void onNext(Anime anime) {
                         getView().postSuccess();
-                        getView().setSearchResults(animes);
+                        getView().setAnime(anime);
                     }
 
                     @Override
@@ -88,6 +83,7 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
                         getView().setRefreshingFalse();
                         e.printStackTrace();
                     }
+
                 });
     }
 

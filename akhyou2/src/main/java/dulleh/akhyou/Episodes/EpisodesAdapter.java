@@ -15,8 +15,18 @@ import dulleh.akhyou.Utils.SnackbarEvent;
 public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHolder>{
     private Episode[] episodes;
 
-    public void setEpisodes (Episode[] episodes) {
+    public EpisodesAdapter (Episode[] episodes) {
         this.episodes = episodes;
+    }
+
+    public void setEpisodes (Episode[] episodes) {
+        this.clear();
+        this.episodes = episodes;
+        this.notifyDataSetChanged();
+    }
+
+    public void clear() {
+        this.episodes = new Episode[0];
         this.notifyDataSetChanged();
     }
 
@@ -51,8 +61,4 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHo
         return this.episodes.length;
     }
 
-    public void clear() {
-        this.episodes = new Episode[0];
-        this.notifyDataSetChanged();
-    }
 }

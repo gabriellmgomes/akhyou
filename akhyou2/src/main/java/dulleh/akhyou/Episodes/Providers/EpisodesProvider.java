@@ -1,8 +1,9 @@
-package dulleh.akhyou.Models;
+package dulleh.akhyou.Episodes.Providers;
 
-public interface Scraper {
+import dulleh.akhyou.Models.Anime;
+import dulleh.akhyou.Models.Episode;
 
-    String fetchUrl(String url);
+public interface EpisodesProvider {
 
     Anime fetchAnime(String url);
 
@@ -23,13 +24,5 @@ public interface Scraper {
     Episode fetchEpisodeTitle(String url);
 
     String fetchEpisodeLink(String url);
-
-    Source[] fetchSources(String url);
-
-    Source fetchSource(String url);
-
-    String fetchSourceTitle(String url);
-
-    String fetchSourceUrl(String url);
 
 }

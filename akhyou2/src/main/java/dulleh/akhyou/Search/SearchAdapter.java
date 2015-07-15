@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.R;
+import dulleh.akhyou.Utils.FragmentRequestEvent;
 import dulleh.akhyou.Utils.OpenAnimeEvent;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
@@ -21,9 +22,19 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     private Context context;
     private float d;
 
+    public SearchAdapter (Anime[] animes) {
+        this.animes = animes;
+    }
+
     public void setAnimes (Anime[] animes) {
+        this.clear();
         this.animes = animes;
         this.notifyDataSetChanged();
+    }
+
+    public void addAnime (Anime anime) {
+        animes[animes.length] = anime;
+        this.notifyItemInserted(animes.length);
     }
 
     public Anime[] getAnimes () {
@@ -70,7 +81,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             @Override
             public void onClick(View view) {
                 Anime anime = animes[viewHolder.getAdapterPosition()];
-                EventBus.getDefault().post(new OpenAnimeEvent(anime));
+                EventBus.getDefault().post(new FragmentRequestEvent("EPI"));
+                EventBus.getDefault().postSticky(new OpenAnimeEvent(anime));
             }
         });
     }

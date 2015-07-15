@@ -15,3 +15,14 @@
 
 -dontwarn okio.**
 -dontwarn com.squareup.okhttp.internal.huc.**
+
+-keepclassmembers class ** {
+    public void onEvent*(**);
+}
+
+-dontwarn rx.internal.util.**
+-dontwarn java.lang.invoke.*
+
+-keep class android.support.design.** { *; }
+-keep interface android.support.design.** { *; }
+-keep class android.support.v7.widget.SearchView { *; }
