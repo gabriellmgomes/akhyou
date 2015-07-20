@@ -1,10 +1,13 @@
 package dulleh.akhyou.Episodes.Providers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.Models.Source;
 
-public class FakeEpisodesProvider implements EpisodesProvider{
+public class FakeEpisodesProvider extends BaseEpisodesProvider{
 
     @Override
     public Anime fetchAnime(String url) {
@@ -22,68 +25,42 @@ public class FakeEpisodesProvider implements EpisodesProvider{
                 .setGenres(fakeGenres());
     }
 
-    private Episode[] fakeEpisodes() {
+    private List<Episode> fakeEpisodes() {
         Episode episode = new Episode()
                 .setTitle("Episode 1")
                 .setUrl("http://www.animerush.tv/hyouka-episode-1/mirror-283153/")
                 .setSources(fakeSources());
-        return new Episode[] {episode, episode, episode, episode, episode, episode, episode};
+        List<Episode> episodes = new ArrayList<>(12);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        episodes.add(episode);
+        return episodes;
     }
 
-    private Source[] fakeSources() {
+    public List<Source> fakeSources() {
         Source source = new Source()
                 .setTitle("Mp4Upload SUBBED")
                 .setUrl("http://www6.mp4upload.com:182/d/sgxt5lsdz3b4quuolsuaypswicaihpuuhvjaxciv2zeqxpiig7zm6tgq/video.mp4");
-        return new Source[] {source, source, source, source};
+        List<Source> sources = new ArrayList<>(4);
+        sources.add(source);
+        sources.add(source);
+        sources.add(source);
+        sources.add(source);
+        return  sources;
     }
 
     private String[] fakeGenres() {
         return new String[] {"Mystery", "School"};
-    }
-
-    @Override
-    public String fetchTitle(String url) {
-        return null;
-    }
-
-    @Override
-    public String fetchDesc(String url) {
-        return null;
-    }
-
-    @Override
-    public String fetchImageUrl(String url) {
-        return null;
-    }
-
-    @Override
-    public String[] fetchGenres(String url) {
-        return new String[0];
-    }
-
-    @Override
-    public String fetchGenre(String url) {
-        return null;
-    }
-
-    @Override
-    public Episode[] fetchEpisodes(String url) {
-        return new Episode[0];
-    }
-
-    @Override
-    public Episode fetchEpisode(String url) {
-        return null;
-    }
-
-    @Override
-    public Episode fetchEpisodeTitle(String url) {
-        return null;
-    }
-
-    @Override
-    public String fetchEpisodeLink(String url) {
-        return null;
     }
 
 }

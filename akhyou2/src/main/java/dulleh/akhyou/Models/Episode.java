@@ -1,9 +1,11 @@
 package dulleh.akhyou.Models;
 
+import java.util.List;
+
 public class Episode {
     private String title;
     private String url;
-    private Source[] sources;
+    private List<Source> sources;
 
     public String getTitle() {
         return title;
@@ -23,11 +25,11 @@ public class Episode {
         return this;
     }
 
-    public Source[] getSources() {
+    public List<Source> getSources() {
         return sources;
     }
 
-    public Episode setSources(Source[] sources) {
+    public Episode setSources(List<Source> sources) {
         this.sources = sources;
         return this;
     }

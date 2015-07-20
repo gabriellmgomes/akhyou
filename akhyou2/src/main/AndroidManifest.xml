@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="dulleh.akhyou">
-
     <uses-sdk tools:overrideLibrary="info.android15.nucleus_support_v4" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,7 +11,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/BaseTheme" >
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -22,6 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

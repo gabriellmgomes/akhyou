@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="fill_parent"
@@ -14,22 +14,38 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/abc_action_bar_default_height_material"
             app:contentInsetLeft="0dp"
-            app:contentInsetStart="0dp"
-            app:contentInsetRight="0dp"
-            app:contentInsetEnd="0dp"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:background="@color/primary" />
+            app:contentInsetStart="0dp" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
+                android:layout_marginStart="@dimen/abc_action_bar_content_inset_material"
+
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout >
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:clickable="true" />
+        android:clickable="true" >
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

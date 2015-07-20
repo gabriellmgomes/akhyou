@@ -2,16 +2,21 @@ package dulleh.akhyou.Episodes;
 
 import android.os.Bundle;
 
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
+import dulleh.akhyou.Episodes.Providers.AnimeRushEpisodesProvider;
 import dulleh.akhyou.Episodes.Providers.EpisodesProvider;
 import dulleh.akhyou.Episodes.Providers.FakeEpisodesProvider;
 import dulleh.akhyou.Models.Anime;
+import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.Utils.OpenAnimeEvent;
 import nucleus.presenter.RxPresenter;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
 public class EpisodesPresenter extends RxPresenter<EpisodesFragment>{
@@ -24,7 +29,7 @@ public class EpisodesPresenter extends RxPresenter<EpisodesFragment>{
         super.onCreate(savedState);
 
         if (episodesProvider == null) {
-            episodesProvider = new FakeEpisodesProvider();
+            episodesProvider = new AnimeRushEpisodesProvider();
         }
 
     }
@@ -45,6 +50,10 @@ public class EpisodesPresenter extends RxPresenter<EpisodesFragment>{
     protected void onDestroy() {
         super.onDestroy();
         episodesProvider = null;
+        unsubscribe();
+    }
+
+    private void unsubscribe () {
         subscription.unsubscribe();
     }
 
@@ -60,27 +69,33 @@ public class EpisodesPresenter extends RxPresenter<EpisodesFragment>{
             }
         }
 
-        subscription = Observable.just(episodesProvider.fetchAnime(lastUrl))
+        subscription = Observable.defer(new Func0<Observable<Anime>>() {
+            @Override
+            public Observable<Anime> call() {
+                return Observable.just(episodesProvider.fetchAnime(lastUrl));
+            }
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.deliverLatestCache())
                 .subscribe(new Subscriber<Anime>() {
                     @Override
                     public void onNext(Anime anime) {
-                        getView().postSuccess();
                         getView().setAnime(anime);
                     }
 
                     @Override
                     public void onCompleted() {
+                        getView().postSuccess();
                         getView().setRefreshingFalse();
-                        subscription.unsubscribe();
+                        unsubscribe();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        getView().postError();
+                        getView().postError(e.getMessage().replace("java.lang.Throwable:", "").trim());
                         getView().setRefreshingFalse();
+                        unsubscribe();
                         e.printStackTrace();
                     }
 

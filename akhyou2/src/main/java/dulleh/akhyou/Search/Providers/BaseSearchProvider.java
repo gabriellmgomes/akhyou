@@ -4,8 +4,12 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.jsoup.nodes.Element;
+
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import dulleh.akhyou.Models.Anime;
 import rx.Observable;
@@ -15,8 +19,8 @@ public class BaseSearchProvider implements SearchProvider{
     public static String BASE_URL;
 
     @Override
-    public Anime[] searchFor(String searchTerm){
-        return new Anime[0];
+    public List<Anime> searchFor(String searchTerm){
+        return null;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class BaseSearchProvider implements SearchProvider{
     }
 
     @Override
-    public String getResponse(String url) throws OnErrorThrowable{
+    public String getResponse(String url) {
         OkHttpClient okHttpClient = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -62,10 +66,15 @@ public class BaseSearchProvider implements SearchProvider{
 
         try {
             Response response = okHttpClient.newCall(request).execute();
-            return response.body().toString();
+            return response.body().string();
         } catch (IOException e) {
-            throw OnErrorThrowable.from(e);
+            throw OnErrorThrowable.from(new Throwable("Failed to connect."));
         }
+    }
+
+    @Override
+    public Element isolate(String document) {
+        return null;
     }
 
 }

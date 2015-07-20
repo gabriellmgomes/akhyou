@@ -33,6 +33,8 @@
 
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:paddingTop="8dp"
+            android:singleLine="true"
+            android:maxLines="1"
 
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@id/image_view" android:layout_toStartOf="@id/image_view"
@@ -59,7 +61,7 @@
             android:layout_toLeftOf="@id/image_view" android:layout_toStartOf="@id/image_view"
             android:layout_below="@id/rule"
 
-            android:textColor="@color/gray_darkest"
+            android:textColor="@color/grey_darkest"
             android:textSize="14sp"
             android:maxLines="4"
             android:ellipsize="end" />

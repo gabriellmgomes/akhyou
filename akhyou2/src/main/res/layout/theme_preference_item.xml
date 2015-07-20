@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/preference_title_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:text="@string/theme_preference_title" />
+
+    <TextView
+        android:id="@+id/preference_summary_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/preference_title_text"
+        android:textSize="14sp"
+        android:textColor="@color/md_grey_400" />
+
+</RelativeLayout>

@@ -2,6 +2,9 @@ package dulleh.akhyou.Search;
 
 import android.os.Bundle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Search.Providers.AnimeRushSearchProvider;
@@ -46,6 +49,10 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     protected void onDestroy() {
         super.onDestroy();
         searchProvider = null;
+        unsubscribe();
+    }
+
+    private void unsubscribe () {
         subscription.unsubscribe();
     }
 
@@ -57,35 +64,38 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     public void search () {
         if (subscription != null) {
             if (!subscription.isUnsubscribed()) {
-                subscription.unsubscribe();
+                unsubscribe();
             }
         }
-        subscription = Observable.defer(new Func0<Observable<Anime[]>>() {
+
+        subscription = Observable.defer(new Func0<Observable<List<Anime>>>() {
             @Override
-            public Observable<Anime[]> call() {
+            public Observable<List<Anime>> call() {
                 return Observable.just(searchProvider.searchFor(searchTerm));
             }
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.deliverLatestCache())
-                .subscribe(new Subscriber<Anime[]>() {
+                .subscribe(new Subscriber<List<Anime>>() {
                     @Override
-                    public void onNext(Anime[] animes) {
-                        getView().postSuccess();
+                    public void onNext(List<Anime> animes) {
                         getView().setSearchResults(animes);
                     }
 
                     @Override
                     public void onCompleted() {
+                        getView().postSuccess();
                         getView().setRefreshingFalse();
-                        subscription.unsubscribe();
+                        unsubscribe();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        getView().postError();
+                        getView().setSearchResults(new ArrayList<>(0));
+                        getView().postError(e.getMessage().replace("java.lang.Throwable:", "").trim());
                         getView().setRefreshingFalse();
+                        unsubscribe();
                         e.printStackTrace();
                     }
                 });

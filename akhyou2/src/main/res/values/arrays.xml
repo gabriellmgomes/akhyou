@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="theme_entries">
+        <item>@string/pink_theme</item>
+        <item>@string/purple_theme</item>
+        <item>@string/deep_purple_theme</item>
+        <item>@string/indigo_theme</item>
+        <item>@string/light_blue_theme</item>
+        <item>@string/cyan_theme</item>
+        <item>@string/teal_theme</item>
+        <item>@string/green_theme</item>
+        <item>@string/light_green_theme</item>
+        <item>@string/lime_theme</item>
+        <item>@string/yellow_theme</item>
+        <item>@string/orange_theme</item>
+        <item>@string/deep_orange_theme</item>
+        <item>@string/brown_theme</item>
+        <item>@string/grey_theme</item>
+        <item>@string/blue_grey_theme</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+    </string-array>
+</resources>

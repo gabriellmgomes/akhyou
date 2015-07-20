@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.R;
@@ -18,26 +20,26 @@ import dulleh.akhyou.Utils.FragmentRequestEvent;
 import dulleh.akhyou.Utils.OpenAnimeEvent;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
-    private Anime[] animes;
+    private List<Anime> animes;
     private Context context;
     private float d;
 
-    public SearchAdapter (Anime[] animes) {
+    public SearchAdapter (List<Anime> animes) {
         this.animes = animes;
     }
 
-    public void setAnimes (Anime[] animes) {
+    public void setAnimes (List<Anime> animes) {
         this.clear();
         this.animes = animes;
         this.notifyDataSetChanged();
     }
 
     public void addAnime (Anime anime) {
-        animes[animes.length] = anime;
-        this.notifyItemInserted(animes.length);
+        animes.add(anime);
+        this.notifyItemInserted(animes.size());
     }
 
-    public Anime[] getAnimes () {
+    public List<Anime> getAnimes () {
         return this.animes;
     }
 
@@ -67,11 +69,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
-        viewHolder.titleView.setText(animes[position].getTitle());
-        viewHolder.descView.setText(animes[position].getDesc());
+        viewHolder.titleView.setText(animes.get(position).getTitle());
+        viewHolder.descView.setText(animes.get(position).getDesc());
 
         Picasso.with(context)
-                .load(animes[position].getImageUrl())
+                .load(animes.get(position).getImageUrl())
                 .error(R.drawable.placeholder)
                 .resize((int) (224 * d * 0.5), (int) (300 * d * 0.5))
                 .centerCrop()
@@ -80,7 +82,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         viewHolder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Anime anime = animes[viewHolder.getAdapterPosition()];
+                Anime anime = animes.get(viewHolder.getAdapterPosition());
                 EventBus.getDefault().post(new FragmentRequestEvent("EPI"));
                 EventBus.getDefault().postSticky(new OpenAnimeEvent(anime));
             }
@@ -89,11 +91,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return animes.length;
+        return animes.size();
     }
 
     public void clear () {
-        this.animes = new Anime[0];
+        this.animes.clear();
         this.notifyDataSetChanged();
     }
 }

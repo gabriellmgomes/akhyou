@@ -7,26 +7,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.R;
+import dulleh.akhyou.Utils.OpenEpisodeEvent;
 import dulleh.akhyou.Utils.SnackbarEvent;
 
 public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHolder>{
-    private Episode[] episodes;
+    private List<Episode> episodes;
 
-    public EpisodesAdapter (Episode[] episodes) {
+    public EpisodesAdapter (List<Episode> episodes) {
         this.episodes = episodes;
     }
 
-    public void setEpisodes (Episode[] episodes) {
+    public void setEpisodes (List<Episode> episodes) {
         this.clear();
         this.episodes = episodes;
         this.notifyDataSetChanged();
     }
 
     public void clear() {
-        this.episodes = new Episode[0];
+        this.episodes = new ArrayList<>(0);
         this.notifyDataSetChanged();
     }
 
@@ -47,18 +51,18 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(final EpisodesAdapter.ViewHolder viewHolder, final int position) {
-        viewHolder.titleView.setText(episodes[position].getTitle());
+        viewHolder.titleView.setText(episodes.get(position).getTitle());
         viewHolder.titleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EventBus.getDefault().post(new SnackbarEvent(episodes[position].getSources()[0].getTitle(), Snackbar.LENGTH_LONG, null, null, null));
+                EventBus.getDefault().post(new OpenEpisodeEvent(episodes.get(position).getSources()));
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return this.episodes.length;
+        return this.episodes.size();
     }
 
 }

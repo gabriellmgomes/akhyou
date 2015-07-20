@@ -2,11 +2,36 @@
     <string name="app_name">Akhyou!</string>
     <string name="search_fragment">SEA</string>
     <string name="episodes_fragment">EPI</string>
+    <string name="settings_fragment">SET</string>
 
     <string name="settings_item">Settings</string>
     <string name="search_item">Search</string>
 
+    <string name="theme_preference_key">theme_preference</string>
+    <string name="theme_preference_title">Theme</string>
+    <string name="pink_theme">Pink (requires restart to take effect)</string>
+    <string name="purple_theme">Purple (requires restart to take effect)</string>
+    <string name="deep_purple_theme">Deep Purple (requires restart to take effect)</string>
+    <string name="indigo_theme">Indigo (requires restart to take effect)</string>
+    <string name="light_blue_theme">Light Blue (requires restart to take effect)</string>
+    <string name="cyan_theme">Cyan (requires restart to take effect)</string>
+    <string name="teal_theme">Teal (requires restart to take effect)</string>
+    <string name="green_theme">Green (requires restart to take effect)</string>
+    <string name="light_green_theme">Light Green (requires restart to take effect)</string>
+    <string name="lime_theme">Lime (requires restart to take effect)</string>
+    <string name="yellow_theme">Yellow (requires restart to take effect)</string>
+    <string name="orange_theme">Orange (requires restart to take effect)</string>
+    <string name="deep_orange_theme">Deep Orange (requires restart to take effect)</string>
+    <string name="brown_theme">Brown (requires restart to take effect)</string>
+    <string name="grey_theme">Grey (requires restart to take effect)</string>
+    <string name="blue_grey_theme">Blue Grey (requires restart to take effect)</string>
+
     <string name="imageContentDesc">Anime poster</string>
+
+    <string name="sources">Sources</string>
+    <string name="stream">Stream</string>
+    <string name="download">Download</string>
+    <string name="cancel">Cancel</string>
 
     <string name="testTitle">Hyouka</string>
     <string name="testDesc">Oreki Hotaro is a high school boy, who always acts passively. One day, he enters "Koten Bu (Classic Literature Club)" as recommended by his elder sister. There he meets Chitanda Eru, Fukube Satoshi, and Ibara Mayaka. Chitanda is a calm beautiful girl but she turns into an embodiment of curiosity once she says, "I'm interested in it (Watashi, Kininarimasu)". Fukube is a smiling boy with a fantastic memory, he never deduces anything on his own. Ibara is a short girl and is strict with others and herself. She loves Fukube, but he always dodges her approaches. They begin to investigate a case that occurred 33 years ago. Hints of the mystery are buried in an old collection of works of the former members of Koten Club. The collection is titled "Hyouka".</string>

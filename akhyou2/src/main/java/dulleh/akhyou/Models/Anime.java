@@ -1,12 +1,17 @@
 package dulleh.akhyou.Models;
 
+import java.util.List;
+
 public class Anime {
     private String title;
     private String desc;
     private String url;
     private String imageUrl;
+    private String status;
+    private String alternateTitle;
+    private String date;
     private String[] genres;
-    private Episode[] episodes;
+    private List<Episode> episodes;
 
     public String getTitle() {
         return title;
@@ -53,13 +58,39 @@ public class Anime {
         return this;
     }
 
-    public Episode[] getEpisodes() {
+    public List<Episode> getEpisodes() {
         return episodes;
     }
 
-    public Anime setEpisodes(Episode[] episodes) {
+    public Anime setEpisodes(List<Episode> episodes) {
         this.episodes = episodes;
         return this;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public Anime setDate(String date) {
+        this.date = date;
+        return this;
+    }
+
+    public String getAlternateTitle() {
+        return alternateTitle;
+    }
+
+    public Anime setAlternateTitle(String alternateTitle) {
+        this.alternateTitle = alternateTitle;
+        return this;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Anime setStatus(String status) {
+        this.status = status;
+        return this;
+    }
 }

@@ -26,3 +26,12 @@
 -keep class android.support.design.** { *; }
 -keep interface android.support.design.** { *; }
 -keep class android.support.v7.widget.SearchView { *; }
+
+-keep public class org.jsoup.** {
+    public *;
+}
+
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
+
+-printmapping
