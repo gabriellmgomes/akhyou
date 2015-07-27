@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CollapsingToolbarLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/collapsing_toolbar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_scrollFlags="scroll|exitUntilCollapsed"
+    app:contentScrim="?attr/colorPrimary"
+    app:expandedTitleMarginEnd="44dp">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/header_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_collapseMode="parallax"
+        app:layout_collapseParallaxMultiplier="0.8">
+
+        <ImageView
+            android:id="@+id/collapsing_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/imageContentDesc" />
+
+        <ImageView
+            android:id="@+id/expand_more_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@id/collapsing_image"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_info_white_24dp" />
+
+    </RelativeLayout>
+
+    <!--
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/abc_action_bar_default_height_material" />-->
+    <!--
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        -->
+
+</android.support.design.widget.CollapsingToolbarLayout>

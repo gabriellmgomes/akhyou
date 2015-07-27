@@ -1,4 +1,4 @@
-package dulleh.akhyou.Episodes;
+package dulleh.akhyou.Anime;
 
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -13,17 +13,21 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.R;
-import dulleh.akhyou.Utils.OpenEpisodeEvent;
+import dulleh.akhyou.Utils.EpisodeSelectedListener;
 import dulleh.akhyou.Utils.SnackbarEvent;
 
-public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHolder>{
+public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder>{
     private List<Episode> episodes;
+    private final EpisodeSelectedListener episodeSelectedListener;
+    private final int watchedColor;
 
-    public EpisodesAdapter (List<Episode> episodes) {
+    public AnimeAdapter(List<Episode> episodes, EpisodeSelectedListener episodeSelectedListener, int watchedColor) {
         this.episodes = episodes;
+        this.episodeSelectedListener = episodeSelectedListener;
+        this.watchedColor = watchedColor;
     }
 
-    public void setEpisodes (List<Episode> episodes) {
+    public void setAnime (List<Episode> episodes) {
         this.clear();
         this.episodes = episodes;
         this.notifyDataSetChanged();
@@ -43,26 +47,43 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHo
     }
 
     @Override
-    public EpisodesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AnimeAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.episode_item, parent, false);
-        return new ViewHolder(v);
+        return new AnimeAdapter.ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final EpisodesAdapter.ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(final AnimeAdapter.ViewHolder viewHolder, final int position) {
         viewHolder.titleView.setText(episodes.get(position).getTitle());
+        /*
+        if (episodes.get(position).isWatched()) {
+            viewHolder.titleView.setTextColor(watchedColor);
+        }
+        */
         viewHolder.titleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EventBus.getDefault().post(new OpenEpisodeEvent(episodes.get(position).getSources()));
+                episodeSelectedListener.onEpisodeSelected(episodes.get(position), position);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return this.episodes.size();
+        return episodes.size();
+    }
+
+    public void setWatched (int position) {
+        episodes.set(position, episodes.get(position).setWatched(true));
+        //this.notifyItemChanged(position);
+    }
+
+    public Episode getItemAtPosition (int position) {
+        if (episodes != null) {
+            return episodes.get(position);
+        }
+        return null;
     }
 
 }

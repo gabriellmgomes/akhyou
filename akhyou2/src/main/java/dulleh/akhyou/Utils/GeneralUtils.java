@@ -1,35 +1,38 @@
-package dulleh.akhyou.Search.Providers;
+package dulleh.akhyou.Utils;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.jsoup.nodes.Element;
-
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 
-import dulleh.akhyou.Models.Anime;
-import rx.Observable;
 import rx.exceptions.OnErrorThrowable;
 
-public class BaseSearchProvider implements SearchProvider{
-    public static String BASE_URL;
+public class GeneralUtils {
 
-    @Override
-    public List<Anime> searchFor(String searchTerm){
-        return null;
+    public static String getWebPage (final String url) {
+        OkHttpClient okHttpClient = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            throw OnErrorThrowable.from(new Throwable("Failed to connect.", e));
+        }
     }
 
-    @Override
-    public String encodeURL(String s) {
+    public static String encodeForUtf8 (String s) {
         try {
-            return BASE_URL + URLEncoder.encode(s, "utf-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return BASE_URL + s.replace(":", "%3A")
+            return URLEncoder.encode(s, "utf-8");
+        } catch (UnsupportedEncodingException u) {
+            u.printStackTrace();
+            return s.replace(":", "%3A")
                     .replace("/", "%2F")
                     .replace("#", "%23")
                     .replace("?", "%3F")
@@ -54,27 +57,6 @@ public class BaseSearchProvider implements SearchProvider{
                     .replace("|", "%7C")
                     .replace("\"", "%22");
         }
-    }
-
-    @Override
-    public String getResponse(String url) {
-        OkHttpClient okHttpClient = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try {
-            Response response = okHttpClient.newCall(request).execute();
-            return response.body().string();
-        } catch (IOException e) {
-            throw OnErrorThrowable.from(new Throwable("Failed to connect."));
-        }
-    }
-
-    @Override
-    public Element isolate(String document) {
-        return null;
     }
 
 }

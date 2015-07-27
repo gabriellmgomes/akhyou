@@ -22,7 +22,6 @@ import dulleh.akhyou.Utils.OpenAnimeEvent;
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
     private List<Anime> animes;
     private Context context;
-    private float d;
 
     public SearchAdapter (List<Anime> animes) {
         this.animes = animes;
@@ -61,7 +60,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     @Override
     public SearchAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
         context = parent.getContext();
-        d = context.getResources().getDisplayMetrics().density;
         View v = LayoutInflater.from(context)
                 .inflate(R.layout.search_card, parent, false);
         return  new ViewHolder(v);
@@ -75,7 +73,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         Picasso.with(context)
                 .load(animes.get(position).getImageUrl())
                 .error(R.drawable.placeholder)
-                .resize((int) (224 * d * 0.5), (int) (300 * d * 0.5))
+                .fit()
+                .centerCrop()
                 .centerCrop()
                 .into(viewHolder.imageView);
 
@@ -83,7 +82,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             @Override
             public void onClick(View view) {
                 Anime anime = animes.get(viewHolder.getAdapterPosition());
-                EventBus.getDefault().post(new FragmentRequestEvent("EPI"));
+                EventBus.getDefault().post(new FragmentRequestEvent("ANI"));
                 EventBus.getDefault().postSticky(new OpenAnimeEvent(anime));
             }
         });

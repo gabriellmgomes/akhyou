@@ -6,6 +6,7 @@ public class Episode {
     private String title;
     private String url;
     private List<Source> sources;
+    private Boolean watched = false;
 
     public String getTitle() {
         return title;
@@ -33,4 +34,14 @@ public class Episode {
         this.sources = sources;
         return this;
     }
+
+    public Boolean isWatched() {
+        return this.watched;
+    }
+
+    public Episode setWatched(Boolean watched) {
+        this.watched = watched;
+        return this;
+    }
+
 }

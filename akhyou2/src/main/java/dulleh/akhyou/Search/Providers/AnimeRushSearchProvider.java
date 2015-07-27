@@ -8,16 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dulleh.akhyou.Models.Anime;
+import dulleh.akhyou.Utils.GeneralUtils;
 import rx.exceptions.OnErrorThrowable;
 
-public class AnimeRushSearchProvider extends BaseSearchProvider{
+public class AnimeRushSearchProvider implements SearchProvider{
+    private static final String BASE_URL = "http://www.animerush.tv/search.php?searchquery=";
 
     @Override
     public List<Anime> searchFor(String searchTerm){
-        BASE_URL = "http://www.animerush.tv/search.php?searchquery=";
-        String url = encodeURL(searchTerm);
+        String url = BASE_URL + GeneralUtils.encodeForUtf8(searchTerm);
 
-        String responseBody = getResponse(url);
+        String responseBody = GeneralUtils.getWebPage(url);
 
         Element searchResultsBox =  isolate(responseBody);
 

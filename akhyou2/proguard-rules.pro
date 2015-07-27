@@ -1,9 +1,17 @@
+-keepattributes Signature
+-keepattributes *Annotation*
+
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
+
+-printmapping
+
 -keep class com.squareup.okhttp.** { *; }
 -keep interface com.squareup.okhttp.** { *; }
 -keep class okio.Okio.**
 
--keepattributes Signature
--keepattributes *Annotation*
+-dontwarn okio.**
+-dontwarn com.squareup.okhttp.internal.huc.**
 
 -keep class com.squareup.picasso.** { *; }
 -keepclasseswithmembers class * {
@@ -13,8 +21,6 @@
     @com.squareup.picasso.** *;
 }
 
--dontwarn okio.**
--dontwarn com.squareup.okhttp.internal.huc.**
 
 -keepclassmembers class ** {
     public void onEvent*(**);
@@ -31,7 +37,4 @@
     public *;
 }
 
--renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable
-
--printmapping
+-keep class dulleh.akhyou.Episodes.EpisodesPresenter { *; }

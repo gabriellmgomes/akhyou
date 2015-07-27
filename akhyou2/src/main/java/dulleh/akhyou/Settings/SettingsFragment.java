@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +13,15 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import de.greenrobot.event.EventBus;
 import dulleh.akhyou.R;
+import dulleh.akhyou.Utils.ToolbarTitleChangedEvent;
 
 public class SettingsFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private String THEME_PREFERENCE;
     CharSequence[] themeTitles;
     CharSequence[] themeValues;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,11 +31,7 @@ public class SettingsFragment extends Fragment {
         themeTitles = getResources().getStringArray(R.array.theme_entries);
         themeValues = getResources().getStringArray(R.array.theme_values);
 
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            TextView toolbarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
-            toolbarTitle.setText(getString(R.string.settings_item));
-        }
+        EventBus.getDefault().post(new ToolbarTitleChangedEvent(getString(R.string.settings_item)));
     }
 
     @Override
@@ -49,7 +45,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 new MaterialDialog.Builder(getActivity())
-                        .title(R.string.sources)
+                        .title(R.string.theme_dialog_title)
                         .items(themeTitles)
                         .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
@@ -58,8 +54,8 @@ public class SettingsFragment extends Fragment {
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putInt(THEME_PREFERENCE, i + 1);
                                 editor.apply();
-                                themeSummary.setText(getSummary(THEME_PREFERENCE));
 
+                                getActivity().recreate();
                                 return false;
                             }
                         })
@@ -71,12 +67,6 @@ public class SettingsFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @NonNull
     private String getSummary (String key) {
         if (key.equals(THEME_PREFERENCE)) {
             int themePref = sharedPreferences.getInt(THEME_PREFERENCE, 0);

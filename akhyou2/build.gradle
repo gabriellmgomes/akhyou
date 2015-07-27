@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "dulleh.akhyou2"
-        minSdkVersion 9
+        minSdkVersion 11
         targetSdkVersion 22
         versionCode 1
-        versionName "0.5"
+        versionName "2.0.0"
 
         renderscriptTargetApi 22
         renderscriptSupportModeEnabled true
@@ -18,11 +18,19 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            applicationVariants.all { variant ->
+                appendVersionName(variant, defaultConfig)
+            }
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
     }
 }
 
@@ -43,6 +51,20 @@ repositories {
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+def appendVersionName(variant, defaultConfig) {
+    variant.outputs.each { output ->
+        if (output.zipAlign) {
+            def file = output.outputFile
+            def fileName = file.name.replace("akhyou2-release.apk", "akhyou-" + defaultConfig.versionName  + ".apk")
+            output.outputFile = new File(file.parent, fileName)
+        }
+
+        def file = output.packageApplication.outputFile
+        def fileName = file.name.replace("akhyou2-release.apk", "akhyou-" + defaultConfig.versionName + ".apk")
+        output.packageApplication.outputFile = new File(file.parent, fileName)
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
@@ -58,5 +80,6 @@ dependencies {
     compile 'io.reactivex:rxandroid:0.25.0'
     compile 'org.jsoup:jsoup:1.8.1'
     compile 'com.afollestad:material-dialogs:0.7.6.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.2'
 
 }

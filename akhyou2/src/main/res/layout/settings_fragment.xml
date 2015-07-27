@@ -6,4 +6,12 @@
     <include layout="@layout/theme_preference_item"
         android:id="@+id/theme_preference_item" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey_darkestXX"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_below="@id/theme_preference_item" />
+
 </RelativeLayout>

@@ -11,10 +11,6 @@ public interface SearchProvider {
 
     List<Anime> searchFor (String searchTerm) throws OnErrorThrowable ;
 
-    String encodeURL (String s);
-
-    String getResponse (String url) throws OnErrorThrowable;
-
     Element isolate (String document);
 
 }

@@ -1,0 +1,17 @@
+package dulleh.akhyou.Anime.Providers;
+
+import java.util.List;
+
+import dulleh.akhyou.Models.Anime;
+import dulleh.akhyou.Models.Source;
+import rx.exceptions.OnErrorThrowable;
+
+public interface AnimeProvider {
+
+    Anime fetchAnime(String url) throws OnErrorThrowable;
+
+    List<Source> fetchSources (String url) throws OnErrorThrowable;
+
+    Source fetchVideo (Source url) throws OnErrorThrowable;
+
+}

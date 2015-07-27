@@ -1,4 +1,4 @@
-package dulleh.akhyou.Episodes.Providers;
+package dulleh.akhyou.Anime.Providers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,14 +6,24 @@ import java.util.List;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.Models.Source;
+import rx.exceptions.OnErrorThrowable;
 
-public class FakeEpisodesProvider extends BaseEpisodesProvider{
+public class FakeAnimeProvider implements AnimeProvider {
 
     @Override
     public Anime fetchAnime(String url) {
         return fakeAnime();
     }
 
+    @Override
+    public List<Source> fetchSources(String url) throws OnErrorThrowable {
+        return null;
+    }
+
+    @Override
+    public Source fetchVideo(Source url) throws OnErrorThrowable {
+        return null;
+    }
 
     private Anime fakeAnime() {
         return new Anime()
@@ -50,7 +60,7 @@ public class FakeEpisodesProvider extends BaseEpisodesProvider{
     public List<Source> fakeSources() {
         Source source = new Source()
                 .setTitle("Mp4Upload SUBBED")
-                .setUrl("http://www6.mp4upload.com:182/d/sgxt5lsdz3b4quuolsuaypswicaihpuuhvjaxciv2zeqxpiig7zm6tgq/video.mp4");
+                .setPageUrl("http://www6.mp4upload.com:182/d/sgxt5lsdz3b4quuolsuaypswicaihpuuhvjaxciv2zeqxpiig7zm6tgq/video.mp4");
         List<Source> sources = new ArrayList<>(4);
         sources.add(source);
         sources.add(source);
@@ -59,7 +69,7 @@ public class FakeEpisodesProvider extends BaseEpisodesProvider{
         return  sources;
     }
 
-    private String[] fakeGenres() {
+    public String[] fakeGenres() {
         return new String[] {"Mystery", "School"};
     }
 

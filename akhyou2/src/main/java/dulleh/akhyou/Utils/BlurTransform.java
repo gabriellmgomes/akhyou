@@ -14,7 +14,7 @@ public class BlurTransform implements Transformation{
 
     public void setContext(Context context) {
         this.context = context;
-    };
+    }
 
     @Override
     public Bitmap transform(Bitmap source) {
@@ -23,7 +23,7 @@ public class BlurTransform implements Transformation{
             final Allocation input = Allocation.createFromBitmap(rs, source, Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT);
             final Allocation output = Allocation.createTyped(rs, input.getType());
             final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-            script.setRadius(6.f);
+            script.setRadius(14.f);
             script.setInput(input);
             script.forEach(output);
             output.copyTo(source);

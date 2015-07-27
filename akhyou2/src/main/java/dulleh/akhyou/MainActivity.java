@@ -9,31 +9,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-
-import com.afollestad.materialdialogs.MaterialDialog;
+import android.widget.TextView;
 
 import de.greenrobot.event.EventBus;
-import dulleh.akhyou.Episodes.EpisodesFragment;
+import dulleh.akhyou.Anime.AnimeFragment;
 import dulleh.akhyou.Search.SearchFragment;
 import dulleh.akhyou.Settings.SettingsFragment;
 import dulleh.akhyou.Utils.FragmentRequestEvent;
-import dulleh.akhyou.Utils.OpenEpisodeEvent;
 import dulleh.akhyou.Utils.SearchEvent;
 import dulleh.akhyou.Utils.SearchSubmittedEvent;
 import dulleh.akhyou.Utils.SettingsItemSelectedEvent;
 import dulleh.akhyou.Utils.SnackbarEvent;
+import dulleh.akhyou.Utils.ToolbarTitleChangedEvent;
 
 public class MainActivity extends AppCompatActivity {
     private android.support.v4.app.FragmentManager fragmentManager;
     private RelativeLayout parentLayout;
-    private String SEARCH_FRAGMENT;
-    private String EPISODES_FRAGMENT;
-    private String SETTINGS_FRAGMENT;
+    private TextView toolbarTitle;
+
+    private static final String SEARCH_FRAGMENT = "SEA";
+    private static final String ANIME_FRAGMENT = "ANI";
+    private static final String SETTINGS_FRAGMENT = "SET";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +39,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SEARCH_FRAGMENT = getString(R.string.search_fragment);
-        EPISODES_FRAGMENT = getString(R.string.episodes_fragment);
-        SETTINGS_FRAGMENT = getString(R.string.settings_fragment);
-
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this);
-        }
-
         fragmentManager = getSupportFragmentManager();
+
         parentLayout = (RelativeLayout) findViewById(R.id.container);
+        toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(null);
-        this.setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         if (savedInstanceState == null) {
@@ -62,6 +54,18 @@ public class MainActivity extends AppCompatActivity {
             onEvent(new FragmentRequestEvent(SEARCH_FRAGMENT));
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
     }
 
     private void setTheme () {
@@ -137,13 +141,6 @@ public class MainActivity extends AppCompatActivity {
                 setTheme(R.style.GreyTheme);
                 break;
         }
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 
     public void onEvent (SearchSubmittedEvent event) {
@@ -157,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                 // can't use !#.isEmpty because requires api 9+
                 if (query.length() > 0) {
                     EventBus.getDefault().postSticky(new SearchEvent(query));
-                    if (fragmentManager.findFragmentByTag(EPISODES_FRAGMENT) != null) {
+                    if (fragmentManager.findFragmentByTag(ANIME_FRAGMENT) != null) {
                         fragmentManager.popBackStack();
                     }
                 }
@@ -191,75 +188,38 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static int selected = 0;
-    public void onEvent (OpenEpisodeEvent event) {
-        new MaterialDialog.Builder(this)
-                .title(R.string.sources)
-                .items(event.getSourcesAsCharSequenceArray())
-                .itemsCallbackSingleChoice(selected, new MaterialDialog.ListCallbackSingleChoice() {
-                    @Override
-                    public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        selected = i;
-                        return false;
-                    }
-                })
-                .callback(new MaterialDialog.ButtonCallback() {
-
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        onEvent(new SnackbarEvent( "STREAM" + event.sources.get(selected).getUrl(), Snackbar.LENGTH_LONG, null, null, null));
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
-                        onEvent(new SnackbarEvent( "DOWNLOAD" + event.sources.get(selected).getUrl(), Snackbar.LENGTH_LONG, null, null, null));
-                    }
-
-                    @Override
-                    public void onNeutral(MaterialDialog dialog) {
-                        super.onNeutral(dialog);
-                        selected = 0;
-                    }
-
-                })
-                .widgetColorRes(R.color.primary)
-                .positiveText(R.string.stream)
-                .positiveColorRes(R.color.primary)
-                .negativeText(R.string.download)
-                .negativeColorRes(R.color.primary)
-                .neutralText(R.string.cancel)
-                .neutralColorRes(R.color.grey_darkestXX)
-                .show();
+    public void onEvent (FragmentRequestEvent event) {
+        switch (event.tag) {
+            case SEARCH_FRAGMENT:
+                fragmentManager
+                        .beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.container, new SearchFragment(), SEARCH_FRAGMENT)
+                        .commit();
+                break;
+            case ANIME_FRAGMENT:
+                fragmentManager
+                        .beginTransaction()
+                        .addToBackStack(SEARCH_FRAGMENT)
+                        .addToBackStack(ANIME_FRAGMENT)
+                        .setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right)
+                        .replace(R.id.container, new AnimeFragment(), ANIME_FRAGMENT)
+                        .commit();
+                break;
+            case SETTINGS_FRAGMENT:
+                fragmentManager
+                        .beginTransaction()
+                        .addToBackStack(SEARCH_FRAGMENT)
+                        .addToBackStack(ANIME_FRAGMENT)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.container, new SettingsFragment(), SETTINGS_FRAGMENT)
+                        .commit();
+                break;
+        }
     }
 
-    public void onEvent (FragmentRequestEvent event) {
-
-        if (event.tag.equals(SEARCH_FRAGMENT)) {
-            fragmentManager
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.container, new SearchFragment(), SEARCH_FRAGMENT)
-                    .commit();
-        } else if (event.tag.equals(EPISODES_FRAGMENT)) {
-            fragmentManager
-                    .beginTransaction()
-                    .addToBackStack(SEARCH_FRAGMENT)
-                    .addToBackStack(EPISODES_FRAGMENT)
-                    .setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right)
-                    .replace(R.id.container, new EpisodesFragment(), EPISODES_FRAGMENT)
-                    .commit();
-        } else if (event.tag.equals(SETTINGS_FRAGMENT)) {
-            fragmentManager
-                    .beginTransaction()
-                    .addToBackStack(SEARCH_FRAGMENT)
-                    .addToBackStack(EPISODES_FRAGMENT)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.container, new SettingsFragment(), SETTINGS_FRAGMENT)
-                    .commit();
-        }
-
+    public void onEvent (ToolbarTitleChangedEvent event) {
+        toolbarTitle.setText(event.title);
     }
 
 }

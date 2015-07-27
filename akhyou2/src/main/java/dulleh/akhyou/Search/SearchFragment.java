@@ -75,7 +75,9 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                EventBus.getDefault().post(new SearchSubmittedEvent(query, searchItem));
+                if (!query.isEmpty()) {
+                    EventBus.getDefault().post(new SearchSubmittedEvent(query, searchItem));
+                }
                 return true;
             }
 

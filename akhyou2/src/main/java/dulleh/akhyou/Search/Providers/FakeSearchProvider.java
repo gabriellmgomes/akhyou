@@ -1,15 +1,22 @@
 package dulleh.akhyou.Search.Providers;
 
+import org.jsoup.nodes.Element;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import dulleh.akhyou.Models.Anime;
 
-public class FakeSearchProvider extends BaseSearchProvider{
+public class FakeSearchProvider implements SearchProvider{
 
     @Override
     public List<Anime> searchFor(String searchTerm) {
         return fakeAnimes();
+    }
+
+    @Override
+    public Element isolate(String document) {
+        return null;
     }
 
     private List<Anime> fakeAnimes() {
