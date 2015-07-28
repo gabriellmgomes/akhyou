@@ -20,7 +20,12 @@ public class DailyMotionSourceProvider implements SourceProvider{
 
         String body = GeneralUtils.getWebPage(embedPage);
 
-        String elementHtml = Jsoup.parse(body).select("div.ad_box").first().nextElementSibling().html();
+        String elementHtml;
+        try {
+            elementHtml = Jsoup.parse(body).select("div.ad_box").first().nextElementSibling().html();
+        } catch (Exception e) {
+            throw OnErrorThrowable.from(new Throwable("DailyMotion video retrieval failed.", e));
+        }
 
         elementHtml = elementHtml.substring(elementHtml.indexOf("var info = ") + 11, elementHtml.indexOf("fields")).trim();
         elementHtml = elementHtml.substring(0, elementHtml.lastIndexOf(","));

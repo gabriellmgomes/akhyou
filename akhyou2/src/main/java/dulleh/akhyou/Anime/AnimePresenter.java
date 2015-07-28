@@ -27,6 +27,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     private AnimeProvider animeProvider;
 
     private String lastUrl;
+    private String lastAnimeTitle;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -42,6 +43,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     protected void onTakeView(AnimeFragment view) {
         super.onTakeView(view);
         EventBus.getDefault().registerSticky(this);
+        getView().setToolbarTitle(lastAnimeTitle);
     }
 
     @Override
@@ -65,7 +67,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
     public void onEvent (OpenAnimeEvent event) {
         this.lastUrl = event.anime.getUrl();
-        EventBus.getDefault().post(new ToolbarTitleChangedEvent(event.anime.getTitle()));
+        this.lastAnimeTitle = event.anime.getTitle();
         fetchAnime();
     }
 

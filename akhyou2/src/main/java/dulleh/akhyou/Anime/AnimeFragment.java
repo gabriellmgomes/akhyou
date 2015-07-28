@@ -40,6 +40,7 @@ import dulleh.akhyou.Utils.EpisodeSelectedListener;
 import dulleh.akhyou.Utils.SearchSubmittedEvent;
 import dulleh.akhyou.Utils.SettingsItemSelectedEvent;
 import dulleh.akhyou.Utils.SnackbarEvent;
+import dulleh.akhyou.Utils.ToolbarTitleChangedEvent;
 import nucleus.factory.RequiresPresenter;
 import nucleus.view.NucleusSupportFragment;
 
@@ -56,7 +57,6 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
 
         episodesAdapter = new AnimeAdapter(new ArrayList<>(0), this, getResources().getColor(R.color.grey_dark));
         setHasOptionsMenu(true);
@@ -83,7 +83,6 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
             }
         });
 */
-
     }
 
     @Nullable
@@ -125,7 +124,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        inflater.inflate(R.menu.search_menu, menu);
+        //inflater.inflate(R.menu.search_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.search_item);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -181,6 +180,10 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
 
     public void setRefreshingFalse () {
         refreshLayout.setRefreshing(false);
+    }
+
+    public void setToolbarTitle (String animeTitle) {
+        EventBus.getDefault().post(new ToolbarTitleChangedEvent(animeTitle));
     }
 
     public void postSuccess (String successMessage) {

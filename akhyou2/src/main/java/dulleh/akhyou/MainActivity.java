@@ -151,11 +151,13 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // can't use !#.isEmpty because requires api 9+
-                if (query.length() > 0) {
-                    EventBus.getDefault().postSticky(new SearchEvent(query));
+                if (!query.trim().isEmpty()) {
+                    EventBus.getDefault().postSticky(new SearchEvent(query.trim()));
                     if (fragmentManager.findFragmentByTag(ANIME_FRAGMENT) != null) {
                         fragmentManager.popBackStack();
+                    }
+                    if (fragmentManager.findFragmentByTag(SEARCH_FRAGMENT) == null) {
+                        onEvent(new FragmentRequestEvent(SEARCH_FRAGMENT));
                     }
                 }
                 searchView.clearFocus();
@@ -189,31 +191,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEvent (FragmentRequestEvent event) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         switch (event.tag) {
             case SEARCH_FRAGMENT:
-                fragmentManager
-                        .beginTransaction()
+                fragmentTransaction
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .replace(R.id.container, new SearchFragment(), SEARCH_FRAGMENT)
                         .commit();
                 break;
+
             case ANIME_FRAGMENT:
-                fragmentManager
-                        .beginTransaction()
-                        .addToBackStack(SEARCH_FRAGMENT)
-                        .addToBackStack(ANIME_FRAGMENT)
-                        .setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right)
-                        .replace(R.id.container, new AnimeFragment(), ANIME_FRAGMENT)
-                        .commit();
+                fragmentTransaction
+                        .setCustomAnimations(R.anim.enter_right, 0, 0, R.anim.exit_right)
+                        .add(R.id.container, new AnimeFragment(), ANIME_FRAGMENT);
+
+                if (fragmentManager.findFragmentByTag(SEARCH_FRAGMENT) != null) {
+                    fragmentTransaction
+                            .addToBackStack(SEARCH_FRAGMENT);
+                }
+
+                fragmentTransaction.commit();
                 break;
+
             case SETTINGS_FRAGMENT:
-                fragmentManager
-                        .beginTransaction()
-                        .addToBackStack(SEARCH_FRAGMENT)
-                        .addToBackStack(ANIME_FRAGMENT)
+                fragmentTransaction
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .replace(R.id.container, new SettingsFragment(), SETTINGS_FRAGMENT)
-                        .commit();
+                        .add(R.id.container, new SettingsFragment(), SETTINGS_FRAGMENT);
+
+                if (fragmentManager.findFragmentByTag(SEARCH_FRAGMENT) != null) {
+                    fragmentTransaction
+                            .hide(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
+                }
+
+                if (fragmentManager.findFragmentByTag(ANIME_FRAGMENT) != null) {
+                    fragmentTransaction
+                            .addToBackStack(ANIME_FRAGMENT)
+                            .hide(fragmentManager.findFragmentByTag(ANIME_FRAGMENT));
+                } else {
+                    fragmentTransaction.addToBackStack(SEARCH_FRAGMENT);
+                }
+
+                fragmentTransaction.commit();
                 break;
         }
     }

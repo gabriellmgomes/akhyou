@@ -37,4 +37,6 @@
     public *;
 }
 
+-dontwarn org.w3c.dom.**
+
 -keep class dulleh.akhyou.Episodes.EpisodesPresenter { *; }

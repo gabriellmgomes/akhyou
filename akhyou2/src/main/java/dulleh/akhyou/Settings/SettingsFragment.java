@@ -30,8 +30,6 @@ public class SettingsFragment extends Fragment {
         THEME_PREFERENCE = getString(R.string.theme_preference_key);
         themeTitles = getResources().getStringArray(R.array.theme_entries);
         themeValues = getResources().getStringArray(R.array.theme_values);
-
-        EventBus.getDefault().post(new ToolbarTitleChangedEvent(getString(R.string.settings_item)));
     }
 
     @Override
@@ -65,6 +63,12 @@ public class SettingsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().post(new ToolbarTitleChangedEvent(getString(R.string.settings_item)));
     }
 
     private String getSummary (String key) {

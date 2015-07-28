@@ -12,7 +12,9 @@ import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.Models.Source;
 import dulleh.akhyou.Models.SourceProviders.DailyMotionSourceProvider;
+import dulleh.akhyou.Models.SourceProviders.EngineSourceProvider;
 import dulleh.akhyou.Models.SourceProviders.Mp4UploadSourceProvider;
+import dulleh.akhyou.Models.SourceProviders.YourUploadSourceProvider;
 import dulleh.akhyou.Models.Video;
 import dulleh.akhyou.Utils.GeneralUtils;
 import rx.exceptions.OnErrorThrowable;
@@ -20,6 +22,8 @@ import rx.exceptions.OnErrorThrowable;
 public class AnimeRushAnimeProvider implements AnimeProvider {
     private static final String MP4UPLOAD = "mp4upload";
     private static final String DAILYMOTION = "dailymotion";
+    private static final String ENGINE = "engine";
+    private static final String YOURUPLOAD = "yourupload";
 
     @Override
     public Anime fetchAnime(String url) {
@@ -198,10 +202,12 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
 
         if (lowerCaseSourceTitle.contains(MP4UPLOAD)) {
             return new Mp4UploadSourceProvider().fetchSource(source.getEmbedUrl());
-        }
-
-        if (lowerCaseSourceTitle.contains(DAILYMOTION)) {
+        } else if (lowerCaseSourceTitle.contains(DAILYMOTION)) {
             return new DailyMotionSourceProvider().fetchSource(source.getEmbedUrl());
+        } else if (lowerCaseSourceTitle.contains(ENGINE)) {
+            return new EngineSourceProvider().fetchSource(source.getEmbedUrl());
+        } else if (lowerCaseSourceTitle.contains(YOURUPLOAD)) {
+            return new YourUploadSourceProvider().fetchSource(source.getEmbedUrl());
         }
 
         return null;

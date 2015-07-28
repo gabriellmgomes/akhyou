@@ -67,7 +67,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
-        viewHolder.titleView.setText(animes.get(position).getTitle());
+
+        viewHolder.titleView.setText(animes.get(position).getTitle()
+                .replaceAll("<b>", "").replaceAll("</b>", "")); // temporary fix for bug with AnimeRush search
+        // can reproduce bug by including spaces in between letters in your search
+        // E.G. "de tective co   nan"
         viewHolder.descView.setText(animes.get(position).getDesc());
 
         Picasso.with(context)
