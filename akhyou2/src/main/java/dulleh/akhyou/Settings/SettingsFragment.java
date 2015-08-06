@@ -1,11 +1,13 @@
 package dulleh.akhyou.Settings;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -13,28 +15,37 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import de.greenrobot.event.EventBus;
+import dulleh.akhyou.MainActivity;
 import dulleh.akhyou.R;
-import dulleh.akhyou.Utils.ToolbarTitleChangedEvent;
 
 public class SettingsFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private String THEME_PREFERENCE;
-    CharSequence[] themeTitles;
-    CharSequence[] themeValues;
+    private CharSequence[] themeTitles;
+    private static final String lastToolbarTitleBundleKey = "LTT";
+    private String lastToolbarTitle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         THEME_PREFERENCE = getString(R.string.theme_preference_key);
         themeTitles = getResources().getStringArray(R.array.theme_entries);
-        themeValues = getResources().getStringArray(R.array.theme_values);
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.settings_fragment, container, false);
+
+        if (savedInstanceState != null) {
+            lastToolbarTitle = savedInstanceState.getString(lastToolbarTitleBundleKey);
+        } else {
+            CharSequence title = ((MainActivity) getActivity()).getSupportActionBar().getTitle();
+            if (title != null) {
+                lastToolbarTitle = title.toString();
+            }
+        }
 
         RelativeLayout themeItem = (RelativeLayout) view.findViewById(R.id.theme_preference_item);
         TextView themeSummary = (TextView) themeItem.findViewById(R.id.preference_summary_text);
@@ -66,9 +77,38 @@ public class SettingsFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(lastToolbarTitleBundleKey, lastToolbarTitle);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().post(new ToolbarTitleChangedEvent(getString(R.string.settings_item)));
+        setToolbarTitle(getString(R.string.settings_item));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        setToolbarTitle(lastToolbarTitle);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        MenuItem searchItem = menu.findItem(R.id.search_item);
+
+        if (searchItem != null) {
+            menu.setGroupVisible(searchItem.getGroupId(), false);
+        }
+
+    }
+
+    public void setToolbarTitle (String title) {
+        //((MainActivity) getActivity()).setToolbarTitle(title);
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle(title);
     }
 
     private String getSummary (String key) {

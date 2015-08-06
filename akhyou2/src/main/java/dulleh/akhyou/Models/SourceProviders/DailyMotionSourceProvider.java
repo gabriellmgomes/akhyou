@@ -16,9 +16,9 @@ import rx.exceptions.OnErrorThrowable;
 public class DailyMotionSourceProvider implements SourceProvider{
 
     @Override
-    public List<Video> fetchSource(String embedPage) {
+    public List<Video> fetchSource(String embedPageUrl) {
 
-        String body = GeneralUtils.getWebPage(embedPage);
+        String body = GeneralUtils.getWebPage(embedPageUrl);
 
         String elementHtml;
         try {

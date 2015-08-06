@@ -2,11 +2,14 @@ package dulleh.akhyou.Models;
 
 import java.util.List;
 
+import dulleh.akhyou.Models.SourceProviders.SourceProvider;
+
 public class Source {
     private String title;
     private String pageUrl;
     private String embedUrl;
     private List<Video> videos;
+    private SourceProvider sourceProvider;
 
     public String getTitle() {
         return title;
@@ -43,4 +46,13 @@ public class Source {
         this.videos = videos;
         return this;
     }
+
+    public SourceProvider getSourceProvider() {
+        return sourceProvider;
+    }
+
+    public void setSourceProvider(SourceProvider sourceProvider) {
+        this.sourceProvider = sourceProvider;
+    }
+
 }

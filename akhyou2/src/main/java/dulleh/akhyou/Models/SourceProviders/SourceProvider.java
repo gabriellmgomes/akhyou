@@ -8,6 +8,6 @@ import rx.exceptions.OnErrorThrowable;
 
 public interface SourceProvider {
 
-    List<Video> fetchSource (String embedPage) throws OnErrorThrowable;
+    List<Video> fetchSource (String embedPageUrl) throws OnErrorThrowable;
 
 }

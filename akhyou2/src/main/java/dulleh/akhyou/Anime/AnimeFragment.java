@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,31 +19,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import de.greenrobot.event.EventBus;
+import dulleh.akhyou.MainActivity;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.Models.Source;
 import dulleh.akhyou.Models.Video;
 import dulleh.akhyou.R;
-import dulleh.akhyou.Utils.EpisodeSelectedListener;
-import dulleh.akhyou.Utils.SearchSubmittedEvent;
-import dulleh.akhyou.Utils.SettingsItemSelectedEvent;
-import dulleh.akhyou.Utils.SnackbarEvent;
-import dulleh.akhyou.Utils.ToolbarTitleChangedEvent;
+import dulleh.akhyou.Utils.AdapterClickListener;
+import dulleh.akhyou.Utils.Events.SearchSubmittedEvent;
+import dulleh.akhyou.Utils.Events.SettingsItemSelectedEvent;
+import dulleh.akhyou.Utils.Events.SnackbarEvent;
 import nucleus.factory.RequiresPresenter;
 import nucleus.view.NucleusSupportFragment;
 
 @RequiresPresenter(AnimePresenter.class)
-public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implements EpisodeSelectedListener {
+public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implements AdapterClickListener<Episode> {
     private AnimeAdapter episodesAdapter;
     private SwipeRefreshLayout refreshLayout;
     //private CollapsingToolbarLayout collapsingToolbarLayout;
@@ -117,24 +112,38 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
             }
         });
 */
+
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        setToolbarTitle(null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        //inflater.inflate(R.menu.search_menu, menu);
-
         MenuItem searchItem = menu.findItem(R.id.search_item);
+
+        if (searchItem == null) {
+            inflater.inflate(R.menu.search_menu, menu);
+            searchItem = menu.findItem(R.id.search_item);
+        }
+
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
         searchView.setIconifiedByDefault(true);
-        searchView.setQueryHint(getString(R.string.search_item));
+        searchView.setIconified(true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (!query.isEmpty()) {
-                    EventBus.getDefault().post(new SearchSubmittedEvent(query, searchItem));
+                    EventBus.getDefault().post(new SearchSubmittedEvent(query));
+                    searchView.clearFocus();
+                    refreshLayout.requestFocus();
                 }
                 return true;
             }
@@ -144,6 +153,9 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                 return false;
             }
         });
+        searchView.clearFocus();
+        refreshLayout.requestFocus();
+
     }
 
     @Override
@@ -160,7 +172,8 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
 
     public void setAnime (Anime anime) {
         episodesAdapter.setAnime(anime.getEpisodes());
-
+        setToolbarTitle(anime.getTitle());
+        ((MainActivity) getActivity()).setLastAnime(anime);
 /*
         Picasso.with(getActivity())
                 .load(anime.getImageUrl())
@@ -175,87 +188,109 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         headerGenresView.setText(Arrays.toString(anime.getGenres()));
 */
 
-        setRefreshingFalse();
+        setRefreshing(false);
     }
 
-    public void setRefreshingFalse () {
-        refreshLayout.setRefreshing(false);
+    public void clearAdapter () {
+        episodesAdapter.clear();
     }
 
-    public void setToolbarTitle (String animeTitle) {
-        EventBus.getDefault().post(new ToolbarTitleChangedEvent(animeTitle));
+    public void setRefreshing (boolean bool) {
+        if (bool) {
+            TypedValue typedValue = new TypedValue();
+            getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typedValue, true);
+            refreshLayout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typedValue.resourceId));
+            refreshLayout.setRefreshing(true);
+        } else{
+            refreshLayout.setRefreshing(false);
+        }
+    }
+
+    public boolean isRefreshing () {
+        return refreshLayout.isRefreshing();
+    }
+
+    public void setToolbarTitle (String title) {
+        try {
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle(title);
+        } catch (Exception e) {
+            EventBus.getDefault().post(new SnackbarEvent("An error occurred."));
+            e.printStackTrace();
+        }
     }
 
     public void postSuccess (String successMessage) {
-        EventBus.getDefault().post(new SnackbarEvent(successMessage, Snackbar.LENGTH_SHORT, null, null, null));
+        EventBus.getDefault().post(new SnackbarEvent(successMessage));
     }
 
     public void postError (String errorMessage) {
-        EventBus.getDefault().post(new SnackbarEvent(errorMessage, Snackbar.LENGTH_SHORT, null, null, null));
+        EventBus.getDefault().post(new SnackbarEvent(errorMessage));
     }
 
-/*
     private void setRefreshLayoutStatus (boolean setEnabled) {
         refreshLayout.setEnabled(setEnabled);
     }
-*/
 
     @Override
-    public void onEpisodeSelected(Episode episode, int position) {
+    public void onCLick(Episode episode, @Nullable Integer position) {
         getPresenter().fetchSources(episode.getUrl());
         this.position = position;
     }
 
     public void showSourcesDialog (List<Source> sources) {
-        TypedValue typedValue = new TypedValue();
-        getActivity().getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true);
-        int accentColor = typedValue.data;
+        if (sources.size() >= 1) {
+            TypedValue typedValue = new TypedValue();
+            getActivity().getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true);
+            int accentColor = typedValue.data;
 
-        new MaterialDialog.Builder(getActivity())
-                .title(getString(R.string.sources))
-                .items(getSourcesAsCharSequenceArray(sources))
-                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
-                    @Override
-                    public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        return true;
-                    }
-                })
-                .callback(new MaterialDialog.ButtonCallback() {
-
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        getPresenter().fetchVideo(sources.get(dialog.getSelectedIndex()));
-                        if (position != null) {
-                            episodesAdapter.setWatched(position);
+            new MaterialDialog.Builder(getActivity())
+                    .title(getString(R.string.sources))
+                    .items(getSourcesAsCharSequenceArray(sources))
+                    .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                        @Override
+                        public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                            return true;
                         }
-                    }
+                    })
+                    .callback(new MaterialDialog.ButtonCallback() {
 
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
-                        getPresenter().fetchVideo(sources.get(dialog.getSelectedIndex()));
-                        if (position != null) {
-                            episodesAdapter.setWatched(position);
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                            getPresenter().fetchVideo(sources.get(dialog.getSelectedIndex()));
+                            if (position != null) {
+                                episodesAdapter.setWatched(position);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onNeutral(MaterialDialog dialog) {
-                        super.onNeutral(dialog);
-                        position = null;
-                    }
+                        @Override
+                        public void onNegative(MaterialDialog dialog) {
+                            super.onNegative(dialog);
+                            getPresenter().fetchVideo(sources.get(dialog.getSelectedIndex()));
+                            if (position != null) {
+                                episodesAdapter.setWatched(position);
+                            }
+                        }
 
-                })
-                .widgetColor(accentColor)
-                .positiveText(R.string.stream)
-                .positiveColor(accentColor)
-                .negativeText(R.string.download)
-                .negativeColor(accentColor)
-                .neutralText(R.string.cancel)
-                .neutralColorRes(R.color.grey_darkestXX)
-                .cancelable(true)
-                .show();
+                        @Override
+                        public void onNeutral(MaterialDialog dialog) {
+                            super.onNeutral(dialog);
+                            position = null;
+                        }
+
+                    })
+                    .widgetColor(accentColor)
+                    .positiveText(R.string.stream)
+                    .positiveColor(accentColor)
+                    .negativeText(R.string.download)
+                    .negativeColor(accentColor)
+                    .neutralText(R.string.cancel)
+                    .neutralColorRes(R.color.grey_darkestXX)
+                    .cancelable(true)
+                    .show();
+        } else {
+            postError("Error: No sources found.");
+        }
     }
 
     private void showVideosDialog (List<Video> videos) {

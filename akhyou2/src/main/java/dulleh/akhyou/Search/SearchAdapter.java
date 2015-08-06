@@ -13,18 +13,18 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.R;
-import dulleh.akhyou.Utils.FragmentRequestEvent;
-import dulleh.akhyou.Utils.OpenAnimeEvent;
+import dulleh.akhyou.Utils.AdapterClickListener;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
     private List<Anime> animes;
     private Context context;
+    private AdapterClickListener<Anime> adapterClickListener;
 
-    public SearchAdapter (List<Anime> animes) {
+    public SearchAdapter (List<Anime> animes, AdapterClickListener<Anime> adapterClickListener) {
         this.animes = animes;
+        this.adapterClickListener = adapterClickListener;
     }
 
     public void setAnimes (List<Anime> animes) {
@@ -85,11 +85,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         viewHolder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Anime anime = animes.get(viewHolder.getAdapterPosition());
-                EventBus.getDefault().post(new FragmentRequestEvent("ANI"));
-                EventBus.getDefault().postSticky(new OpenAnimeEvent(anime));
+                adapterClickListener.onCLick(animes.get(viewHolder.getAdapterPosition()), null);
             }
         });
+
     }
 
     @Override

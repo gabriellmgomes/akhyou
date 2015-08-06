@@ -1,37 +1,49 @@
 package dulleh.akhyou;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.os.Build;
+import android.os.PersistableBundle;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Anime.AnimeFragment;
+import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Search.SearchFragment;
 import dulleh.akhyou.Settings.SettingsFragment;
-import dulleh.akhyou.Utils.FragmentRequestEvent;
-import dulleh.akhyou.Utils.SearchEvent;
-import dulleh.akhyou.Utils.SearchSubmittedEvent;
-import dulleh.akhyou.Utils.SettingsItemSelectedEvent;
-import dulleh.akhyou.Utils.SnackbarEvent;
-import dulleh.akhyou.Utils.ToolbarTitleChangedEvent;
+import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
+import dulleh.akhyou.Utils.Events.SearchEvent;
+import dulleh.akhyou.Utils.Events.SearchSubmittedEvent;
+import dulleh.akhyou.Utils.Events.SettingsItemSelectedEvent;
+import dulleh.akhyou.Utils.Events.SnackbarEvent;
+import nucleus.factory.RequiresPresenter;
+import nucleus.view.NucleusAppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+@RequiresPresenter(MainPresenter.class)
+public class MainActivity extends NucleusAppCompatActivity<MainPresenter> {
+    private SharedPreferences sharedPreferences;
     private android.support.v4.app.FragmentManager fragmentManager;
     private RelativeLayout parentLayout;
-    private TextView toolbarTitle;
+    private NavigationView navigationView;
 
-    private static final String SEARCH_FRAGMENT = "SEA";
-    private static final String ANIME_FRAGMENT = "ANI";
-    private static final String SETTINGS_FRAGMENT = "SET";
+    public static final String SEARCH_FRAGMENT = "SEA";
+    public static final String ANIME_FRAGMENT = "ANI";
+    public static final String SETTINGS_FRAGMENT = "SET";
+    private static final String LAST_ANIME_TITLE_PREF = "last_anime_title_preference";
+    private static final String LAST_ANIME_URL_PREF = "last_anime_url_preference";
+    private static final String CURRENT_DRAWER_SELECTED = "current_drawer_selected_item";
+
+    private static int currentSelectedDrawerItem = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +54,65 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
 
         parentLayout = (RelativeLayout) findViewById(R.id.container);
-        toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            RelativeLayout topLayoutRelative = (RelativeLayout) findViewById(R.id.top_level_relative);
+            getLayoutInflater().inflate(R.layout.horizontal_shadow, topLayoutRelative, true);
+        }
+
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+
+                if (id == R.id.drawer_settings_item) {
+                    onEvent(new SettingsItemSelectedEvent());
+                    currentSelectedDrawerItem = 0;
+                    return true;
+                }
+
+                return true;
+            }
+        });
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(null);
+        toolbar.setContentInsetsRelative(0, 0);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
-        if (savedInstanceState == null) {
-            EventBus.getDefault().postSticky(new SearchEvent("Hyouka"));
-            onEvent(new FragmentRequestEvent(SEARCH_FRAGMENT));
+        Intent openingIntent = getIntent();
+
+        if (openingIntent.getAction() != null && openingIntent.getAction().equals(Intent.ACTION_SEND)) {
+            String intentExtra = openingIntent.getStringExtra(Intent.EXTRA_TEXT);
+
+            if (intentExtra != null && intentExtra.contains("hummingbird.me/anime/")) {
+                getPresenter().launchFromHbLink(intentExtra);
+            }
+
+        } else if (savedInstanceState == null){
+            sharedPreferences = getPreferences(MODE_PRIVATE);
+            String lastAnimeTitle = sharedPreferences.getString(LAST_ANIME_TITLE_PREF, null);
+            String lastAnimeUrl = sharedPreferences.getString(LAST_ANIME_URL_PREF, null);
+
+            if (lastAnimeTitle != null && lastAnimeUrl != null) {
+                EventBus.getDefault().postSticky(new OpenAnimeEvent(new Anime().setTitle(lastAnimeTitle).setUrl(lastAnimeUrl)));
+                requestFragment(ANIME_FRAGMENT);
+            } else {
+                EventBus.getDefault().postSticky(new SearchEvent("Hyouka"));
+                requestFragment(SEARCH_FRAGMENT);
+            }
+
+        } else { //if (savedInstanceState != null) {
+            currentSelectedDrawerItem = savedInstanceState.getInt(CURRENT_DRAWER_SELECTED, 0);
         }
 
     }
@@ -59,17 +120,38 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        EventBus.getDefault().unregister(this);
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putInt(CURRENT_DRAWER_SELECTED, currentSelectedDrawerItem);
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        currentSelectedDrawerItem = savedInstanceState.getInt(CURRENT_DRAWER_SELECTED, 0);
+        navigationView.getMenu().getItem(currentSelectedDrawerItem).setChecked(true);
+    }
+
+    public void setToolbarTitle (String title) {
+        getSupportActionBar().setTitle(title);
     }
 
     private void setTheme () {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        sharedPreferences = getPreferences(MODE_PRIVATE);
         int themePref = sharedPreferences.getInt(getString(R.string.theme_preference_key), -1);
 
         switch (themePref) {
@@ -143,38 +225,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onEvent (SearchSubmittedEvent event) {
-        MenuItem searchItem = event.searchItem;
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint(getString(R.string.search_item));
-        searchView.setIconifiedByDefault(false);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if (!query.trim().isEmpty()) {
-                    EventBus.getDefault().postSticky(new SearchEvent(query.trim()));
-                    if (fragmentManager.findFragmentByTag(ANIME_FRAGMENT) != null) {
-                        fragmentManager.popBackStack();
-                    }
-                    if (fragmentManager.findFragmentByTag(SEARCH_FRAGMENT) == null) {
-                        onEvent(new FragmentRequestEvent(SEARCH_FRAGMENT));
-                    }
-                }
-                searchView.clearFocus();
-                parentLayout.requestFocus();
-                return true;
-            }
+    public void setLastAnime (Anime anime) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(LAST_ANIME_TITLE_PREF, anime.getTitle());
+        editor.putString(LAST_ANIME_URL_PREF, anime.getUrl());
+        editor.apply();
+    }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
+    public void onEvent (SearchSubmittedEvent event) {
+        EventBus.getDefault().postSticky(new SearchEvent(event.searchTerm));
+        if (fragmentManager.findFragmentByTag(ANIME_FRAGMENT) != null) {
+            fragmentManager.popBackStack();
+        }
+        if (fragmentManager.findFragmentByTag(SEARCH_FRAGMENT) == null) {
+            requestFragment(SEARCH_FRAGMENT);
+        }
     }
 
     public void onEvent (SettingsItemSelectedEvent event) {
         if (fragmentManager.findFragmentByTag(SETTINGS_FRAGMENT) == null) {
-            onEvent(new FragmentRequestEvent(SETTINGS_FRAGMENT));
+            requestFragment(SETTINGS_FRAGMENT);
         }
     }
 
@@ -190,9 +260,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onEvent (FragmentRequestEvent event) {
+    public void requestFragment (String tag) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        switch (event.tag) {
+        switch (tag) {
             case SEARCH_FRAGMENT:
                 fragmentTransaction
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -236,8 +306,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onEvent (ToolbarTitleChangedEvent event) {
-        toolbarTitle.setText(event.title);
+    public void postSuccess (String successMessage) {
+        onEvent(new SnackbarEvent(successMessage));
+    }
+
+    public void postError (String errorMessage) {
+        onEvent(new SnackbarEvent(errorMessage));
     }
 
 }

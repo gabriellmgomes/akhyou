@@ -9,15 +9,14 @@ import dulleh.akhyou.Anime.Providers.AnimeRushAnimeProvider;
 import dulleh.akhyou.Anime.Providers.AnimeProvider;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Source;
-import dulleh.akhyou.Utils.OpenAnimeEvent;
-import dulleh.akhyou.Utils.ToolbarTitleChangedEvent;
+import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
+import dulleh.akhyou.Utils.GeneralUtils;
 import nucleus.presenter.RxPresenter;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func0;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class AnimePresenter extends RxPresenter<AnimeFragment>{
@@ -37,41 +36,55 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
             animeProvider = new AnimeRushAnimeProvider();
         }
 
+        if (lastAnimeTitle != null) {
+            getView().setToolbarTitle(lastAnimeTitle);
+        }
+
+        // subscribe here (rather than in onTakeView() so that we don't receive
+        // a stickied event every time the motherfucker takes the view.
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().registerSticky(this);
+        }
+
     }
 
     @Override
     protected void onTakeView(AnimeFragment view) {
         super.onTakeView(view);
-        EventBus.getDefault().registerSticky(this);
-        getView().setToolbarTitle(lastAnimeTitle);
-    }
-
-    @Override
-    protected void onDropView() {
-        super.onDropView();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         animeProvider = null;
         unsubscribe();
     }
 
     private void unsubscribe () {
-        animeSubscription.unsubscribe();
-        episodeSubscription.unsubscribe();
-        videoSubscription.unsubscribe();
+        if (animeSubscription != null && !animeSubscription.isUnsubscribed()) {
+            animeSubscription.unsubscribe();
+        }
+        if (episodeSubscription != null && !episodeSubscription.isUnsubscribed()) {
+            episodeSubscription.unsubscribe();
+        }
+        if (videoSubscription != null && !videoSubscription.isUnsubscribed()) {
+            videoSubscription.unsubscribe();
+        }
     }
 
     public void onEvent (OpenAnimeEvent event) {
         this.lastUrl = event.anime.getUrl();
+        // temporary title until rest of data has loaded so that users don't see a blank toolbar
         this.lastAnimeTitle = event.anime.getTitle();
         fetchAnime();
     }
 
     public void fetchAnime () {
+        if (getView() != null && !getView().isRefreshing()) {
+            getView().setRefreshing(true);
+        }
+
         if (animeSubscription != null) {
             if (!animeSubscription.isUnsubscribed()) {
                 animeSubscription.unsubscribe();
@@ -86,7 +99,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.deliverLatestCache())
+                .compose(this.deliver())
                 .subscribe(new Subscriber<Anime>() {
                     @Override
                     public void onNext(Anime anime) {
@@ -95,15 +108,15 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
                     @Override
                     public void onCompleted() {
-                        getView().setRefreshingFalse();
+                        getView().setRefreshing(false);
                         animeSubscription.unsubscribe();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        getView().postError("Error: " + e.getMessage().replace("java.lang.Throwable:", "").trim());
-                        getView().setRefreshingFalse();
+                        getView().postError(GeneralUtils.formatError(e));
+                        getView().setRefreshing(false);
                         animeSubscription.unsubscribe();
                     }
 
@@ -140,7 +153,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        getView().postError("Error: " + e.getMessage().replace("java.lang.Throwable:", "").trim());
+                        getView().postError(GeneralUtils.formatError(e));
                         episodeSubscription.unsubscribe();
                     }
 
@@ -177,7 +190,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        getView().postError("Error: " + e.getMessage().replace("java.lang.Throwable:", "").trim());
+                        getView().postError(GeneralUtils.formatError(e));
                         videoSubscription.unsubscribe();
                     }
 

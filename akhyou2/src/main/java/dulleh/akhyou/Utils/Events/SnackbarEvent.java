@@ -1,5 +1,6 @@
-package dulleh.akhyou.Utils;
+package dulleh.akhyou.Utils.Events;
 
+import android.support.design.widget.Snackbar;
 import android.view.View;
 
 public class SnackbarEvent {
@@ -15,6 +16,14 @@ public class SnackbarEvent {
         this.actionTitle = actionTitle;
         this.onClickListener = onClickListener;
         this.actionColor = actionColor;
+    }
+
+    public SnackbarEvent (String message) {
+        this.message = message;
+        this.duration = Snackbar.LENGTH_SHORT;
+        this.actionTitle = null;
+        this.onClickListener = null;
+        this.actionColor = null;
     }
 
 }

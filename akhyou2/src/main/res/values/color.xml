@@ -12,6 +12,7 @@
     <color name="grey_darkest">#909090</color>
     <color name="grey_darkestXX">#6c6c6c</color>
     <color name="grey_transparent">#2b000000</color>
+    <color name="grey_transparent_dark">#42000000</color>
 
     <!-- pinks -->
     <color name="md_pink_50">#FCE4EC</color>

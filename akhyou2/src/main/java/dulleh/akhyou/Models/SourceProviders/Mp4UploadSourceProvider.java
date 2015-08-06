@@ -12,9 +12,9 @@ import rx.exceptions.OnErrorThrowable;
 public class Mp4UploadSourceProvider implements SourceProvider{
 
     @Override
-    public List<Video> fetchSource(String url) {
+    public List<Video> fetchSource(String embedPageUrl) {
 
-        String body = GeneralUtils.getWebPage(url);
+        String body = GeneralUtils.getWebPage(embedPageUrl);
 
         String elementHtml = Jsoup.parse(body).select("div#player_code > script").first().html();
 

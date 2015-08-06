@@ -9,7 +9,8 @@ import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Search.Providers.AnimeRushSearchProvider;
 import dulleh.akhyou.Search.Providers.SearchProvider;
-import dulleh.akhyou.Utils.SearchEvent;
+import dulleh.akhyou.Utils.Events.SearchEvent;
+import dulleh.akhyou.Utils.GeneralUtils;
 import nucleus.presenter.RxPresenter;
 import rx.Observable;
 import rx.Subscriber;
@@ -36,7 +37,9 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     @Override
     protected void onTakeView(SearchFragment view) {
         super.onTakeView(view);
-        EventBus.getDefault().registerSticky(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().registerSticky(this);
+        }
     }
 
     @Override
@@ -53,7 +56,9 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     }
 
     private void unsubscribe () {
-        subscription.unsubscribe();
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
+        }
     }
 
     public void onEvent (SearchEvent event) {
@@ -62,6 +67,10 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     }
 
     public void search () {
+        if (!getView().isRefreshing()) {
+            getView().setRefreshing(true);
+        }
+
         if (subscription != null) {
             if (!subscription.isUnsubscribed()) {
                 unsubscribe();
@@ -76,7 +85,7 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.deliverLatestCache())
+                .compose(this.deliver())
                 .subscribe(new Subscriber<List<Anime>>() {
                     @Override
                     public void onNext(List<Anime> animes) {
@@ -85,16 +94,13 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
 
                     @Override
                     public void onCompleted() {
-                        getView().postSuccess();
-                        getView().setRefreshingFalse();
                         unsubscribe();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         getView().setSearchResults(new ArrayList<>(0));
-                        getView().postError(e.getMessage().replace("java.lang.Throwable:", "").trim());
-                        getView().setRefreshingFalse();
+                        getView().postError(GeneralUtils.formatError(e));
                         unsubscribe();
                         e.printStackTrace();
                     }

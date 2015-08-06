@@ -4,11 +4,20 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.jsoup.Jsoup;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import dulleh.akhyou.Models.BasicObservableable;
+import dulleh.akhyou.Models.HummingbirdApi;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.OnErrorThrowable;
+import rx.functions.Func0;
+import rx.schedulers.Schedulers;
 
 public class GeneralUtils {
 
@@ -59,4 +68,53 @@ public class GeneralUtils {
         }
     }
 
+    public static String formatError (Throwable e) {
+        return "Error: " + e.getMessage().replace("java.lang.Throwable:", "").trim();
+    }
+
+    public static String jwPlayerIsolate (String body) {
+        return Jsoup.parse(body).select("div#player").first().nextElementSibling().html();
+    }
+
+/*
+    public static void basicAsyncObservableVoid (BasicObservableable basicObservableable, String string) {
+
+        Observable.defer(new Func0<Observable<Boolean>>() {
+            @Override
+            public Observable<Boolean> call() {
+                return Observable.just(basicObservableable.execute(string));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+
+                    }
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
+
+    }
+*/
+
 }
+
+
+
+
+
+
+
+
+
+

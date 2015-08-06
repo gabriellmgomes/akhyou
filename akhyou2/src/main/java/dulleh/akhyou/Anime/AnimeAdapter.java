@@ -1,6 +1,5 @@
 package dulleh.akhyou.Anime;
 
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,21 +9,19 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.R;
-import dulleh.akhyou.Utils.EpisodeSelectedListener;
-import dulleh.akhyou.Utils.SnackbarEvent;
+import dulleh.akhyou.Utils.AdapterClickListener;
 
 public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder>{
     private List<Episode> episodes;
-    private final EpisodeSelectedListener episodeSelectedListener;
-    private final int watchedColor;
+    private final AdapterClickListener<Episode> adapterClickListener;
+    //private final int watchedColor;
 
-    public AnimeAdapter(List<Episode> episodes, EpisodeSelectedListener episodeSelectedListener, int watchedColor) {
+    public AnimeAdapter(List<Episode> episodes, AdapterClickListener<Episode> episodeSelectedListener, int watchedColor) {
         this.episodes = episodes;
-        this.episodeSelectedListener = episodeSelectedListener;
-        this.watchedColor = watchedColor;
+        this.adapterClickListener = episodeSelectedListener;
+        //this.watchedColor = watchedColor;
     }
 
     public void setAnime (List<Episode> episodes) {
@@ -64,7 +61,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder>{
         viewHolder.titleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                episodeSelectedListener.onEpisodeSelected(episodes.get(position), position);
+                adapterClickListener.onCLick(episodes.get(position), position);
             }
         });
     }

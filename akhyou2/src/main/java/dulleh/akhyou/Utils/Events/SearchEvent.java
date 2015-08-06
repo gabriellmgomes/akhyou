@@ -1,4 +1,4 @@
-package dulleh.akhyou.Utils;
+package dulleh.akhyou.Utils.Events;
 
 public class SearchEvent {
     public final String searchTerm;
