@@ -78,6 +78,7 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
 
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
+        searchView.setQueryHint(getString(R.string.search_item));
         searchView.setIconifiedByDefault(false);
         searchView.setIconified(false);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -104,12 +105,12 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
+/*
         if (id == R.id.settings_item) {
             EventBus.getDefault().post(new SettingsItemSelectedEvent());
             return true;
         }
-
+*/
         return super.onOptionsItemSelected(item);
     }
 

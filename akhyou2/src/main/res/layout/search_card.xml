@@ -12,36 +12,31 @@
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
-
         android:layout_width="match_parent" android:layout_height="150dp"
-        android:paddingLeft="8dp" android:paddingStart="8dp"
-
+        android:paddingLeft="16dp" android:paddingStart="16dp"
         android:background="@drawable/list_item_background" >
 
         <ImageView
             android:id="@+id/image_view"
-
-            android:layout_width="112dp" android:layout_height="150dp"
-            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
-
+            android:layout_width="112dp"
+            android:layout_height="150dp"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
             android:layout_alignParentRight="true" android:layout_alignParentEnd="true"
-
             android:contentDescription="@string/imageContentDesc" />
 
         <TextView
             android:id="@+id/title_view"
-
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:singleLine="true"
-            android:maxLines="1"
-
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@id/image_view" android:layout_toStartOf="@id/image_view"
-
+            android:singleLine="true"
+            android:maxLines="1"
+            android:textSize="14sp"
             android:textColor="@color/primary_text_default_material_light"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
+<!--
         <View
             android:id="@+id/rule"
             android:layout_width="match_parent" android:layout_height="1dp"
@@ -51,15 +46,16 @@
             android:layout_below="@id/title_view"
 
             android:background="@color/accent" />
-
+-->
         <TextView
             android:id="@+id/desc_view"
 
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:paddingTop="6dp" android:paddingBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_below="@id/title_view"
 
             android:layout_toLeftOf="@id/image_view" android:layout_toStartOf="@id/image_view"
-            android:layout_below="@id/rule"
 
             android:textColor="@color/grey_darkest"
             android:textSize="14sp"

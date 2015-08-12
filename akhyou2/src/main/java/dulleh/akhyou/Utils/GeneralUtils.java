@@ -1,5 +1,8 @@
 package dulleh.akhyou.Utils;
 
+import android.support.annotation.Nullable;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -10,6 +13,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.BasicObservableable;
 import dulleh.akhyou.Models.HummingbirdApi;
 import rx.Observable;
@@ -74,6 +78,40 @@ public class GeneralUtils {
 
     public static String jwPlayerIsolate (String body) {
         return Jsoup.parse(body).select("div#player").first().nextElementSibling().html();
+    }
+
+    public static String formattedGeneres (String[] genres) {
+        StringBuilder genresBuilder = new StringBuilder();
+        for (String genre : genres) {
+            genresBuilder.append(" ");
+            genresBuilder.append(genre);
+            genresBuilder.append(",");
+        }
+        genresBuilder.deleteCharAt(genresBuilder.length() - 1);
+        return genresBuilder.toString();
+    }
+
+    // Need to handle null by yourself
+    @Nullable
+    public static String serializeFavourite (Anime anime) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(anime);
+        }catch (IOException io) {
+            io.printStackTrace();
+            return null;
+        }
+    }
+
+    // Need to handle null by yourself
+    @Nullable
+    public static Anime deserializeFavourite (String serializedFavourite) {
+        try {
+            return new ObjectMapper().readValue(serializedFavourite, Anime.class);
+        }catch (IOException io) {
+            io.printStackTrace();
+            return null;
+        }
     }
 
 /*

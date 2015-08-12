@@ -1,8 +1,60 @@
 package dulleh.akhyou.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
-public class Anime {
+public class Anime implements Parcelable{
+
+    // has to be here cos conflicts with V
+    public Anime () {}
+
+    private Anime(Parcel in) {
+        title = in.readString();
+        desc = in.readString();
+        url = in.readString();
+        imageUrl = in.readString();
+        status = in.readString();
+        alternateTitle = in.readString();
+        date = in.readString();
+        genres = in.createStringArray();
+        genresString = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(title);
+        parcel.writeString(desc);
+        parcel.writeString(url);
+        parcel.writeString(imageUrl);
+        parcel.writeString(status);
+        parcel.writeString(alternateTitle);
+        parcel.writeString(date);
+        parcel.writeStringArray(genres);
+        parcel.writeString(genresString);
+        parcel.writeList(episodes);
+    }
+
+    public static final Creator<Anime> CREATOR = new Creator<Anime>() {
+        @Override
+        public Anime createFromParcel(Parcel in) {
+            return new Anime(in);
+        }
+
+        @Override
+        public Anime[] newArray(int size) {
+            return new Anime[size];
+        }
+    };
+
+    // ---------------------------------------------------------------------------------- //
+
     private String title;
     private String desc;
     private String url;
@@ -11,6 +63,7 @@ public class Anime {
     private String alternateTitle;
     private String date;
     private String[] genres;
+    private String genresString;
     private List<Episode> episodes;
 
     public String getTitle() {
@@ -58,6 +111,15 @@ public class Anime {
         return this;
     }
 
+    public String getGenresString() {
+        return genresString;
+    }
+
+    public Anime setGenresString(String genresString) {
+        this.genresString = genresString;
+        return this;
+    }
+
     public List<Episode> getEpisodes() {
         return episodes;
     }
@@ -93,4 +155,5 @@ public class Anime {
         this.status = status;
         return this;
     }
+
 }

@@ -1,10 +1,14 @@
 package dulleh.akhyou.Anime;
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,10 +21,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +41,8 @@ import dulleh.akhyou.Models.Source;
 import dulleh.akhyou.Models.Video;
 import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.AdapterClickListener;
+import dulleh.akhyou.Utils.Events.FavouriteEvent;
 import dulleh.akhyou.Utils.Events.SearchSubmittedEvent;
-import dulleh.akhyou.Utils.Events.SettingsItemSelectedEvent;
 import dulleh.akhyou.Utils.Events.SnackbarEvent;
 import nucleus.factory.RequiresPresenter;
 import nucleus.view.NucleusSupportFragment;
@@ -44,7 +52,10 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     private AnimeAdapter episodesAdapter;
     private SwipeRefreshLayout refreshLayout;
     //private CollapsingToolbarLayout collapsingToolbarLayout;
-    private ImageView collapsingImage;
+    private ImageView drawerImage;
+    private TextView drawerDesc;
+    private TextView drawerGenres;
+    private CheckBox drawerCheckBox;
     //private BlurTransform blurTransform;
     private Integer position;
     //private float d;
@@ -83,7 +94,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.episodes_fragment, container, false);
+        View view = inflater.inflate(R.layout.anime_fragment, container, false);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext(), LinearLayout.VERTICAL, false));
@@ -96,6 +107,20 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
             @Override
             public void onRefresh() {
                 getPresenter().fetchAnime();
+            }
+        });
+
+        DrawerLayout animeDrawer = (DrawerLayout) view.findViewById(R.id.anime_drawer_layout);
+
+        drawerImage = (ImageView) animeDrawer.findViewById(R.id.drawer_image_view);
+        drawerDesc = (TextView) animeDrawer.findViewById(R.id.drawer_desc_view);
+        drawerGenres = (TextView) animeDrawer.findViewById(R.id.drawer_genres_view);
+
+        drawerCheckBox = (CheckBox) animeDrawer.findViewById(R.id.drawer_favourite_checkbox);
+        drawerCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                getPresenter().onFavouriteCheckedChanged(b);
             }
         });
 
@@ -135,6 +160,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
 
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
+        searchView.setQueryHint(getString(R.string.search_item));
         searchView.setIconifiedByDefault(true);
         searchView.setIconified(true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -161,32 +187,33 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
+/*
         if (id == R.id.settings_item) {
             EventBus.getDefault().post(new SettingsItemSelectedEvent());
             return true;
         }
-
+*/
         return super.onOptionsItemSelected(item);
     }
 
-    public void setAnime (Anime anime) {
+    public void setAnime (Anime anime, boolean isInFavourites) {
         episodesAdapter.setAnime(anime.getEpisodes());
         setToolbarTitle(anime.getTitle());
-        ((MainActivity) getActivity()).setLastAnime(anime);
-/*
+
         Picasso.with(getActivity())
                 .load(anime.getImageUrl())
                 .error(R.drawable.placeholder)
-                .transform(blurTransform)
+                //.transform(blurTransform)
                         //.transform(blurTransform)
                 .fit()
                 .centerCrop()
-                .into(collapsingImage);
+                .into(drawerImage);
 
-        headerDescView.setText(anime.getDesc());
-        headerGenresView.setText(Arrays.toString(anime.getGenres()));
-*/
+        drawerDesc.setText(anime.getDesc());
+        drawerGenres.setText(anime.getGenresString());
+
+        // CHECK IF IN FAVOURITES
+        drawerCheckBox.setChecked(isInFavourites);
 
         setRefreshing(false);
     }
@@ -212,7 +239,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
 
     public void setToolbarTitle (String title) {
         try {
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle(title);
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle(title); //MAY PRODUCE NULL POINTER EXCEPTION
         } catch (Exception e) {
             EventBus.getDefault().post(new SnackbarEvent("An error occurred."));
             e.printStackTrace();
@@ -257,7 +284,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                         @Override
                         public void onPositive(MaterialDialog dialog) {
                             super.onPositive(dialog);
-                            getPresenter().fetchVideo(sources.get(dialog.getSelectedIndex()));
+                            getPresenter().fetchVideo(sources.get(dialog.getSelectedIndex()), false);
                             if (position != null) {
                                 episodesAdapter.setWatched(position);
                             }
@@ -266,7 +293,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                         @Override
                         public void onNegative(MaterialDialog dialog) {
                             super.onNegative(dialog);
-                            getPresenter().fetchVideo(sources.get(dialog.getSelectedIndex()));
+                            getPresenter().fetchVideo(sources.get(dialog.getSelectedIndex()), true);
                             if (position != null) {
                                 episodesAdapter.setWatched(position);
                             }
@@ -293,14 +320,14 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         }
     }
 
-    private void showVideosDialog (List<Video> videos) {
+    private void showVideosDialog (List<Video> videos, boolean download) {
         new MaterialDialog.Builder(getActivity())
                 .title(getString(R.string.quality))
                 .items(getVideosAsCharSequenceArray(videos))
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        postIntent(videos.get(i).getUrl());
+                        downloadOrStream(videos.get(i), download);
                     }
                 })
                 .show();
@@ -322,11 +349,24 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         return videosAsArray;
     }
 
-    public void shareVideo (Source source) {
+    public void shareVideo (Source source, boolean download) {
         if (source.getVideos().size() == 1) {
-            postIntent(source.getVideos().get(0).getUrl());
+            downloadOrStream(source.getVideos().get(0), download);
         } else {
-            showVideosDialog(source.getVideos());
+            showVideosDialog(source.getVideos(), download);
+        }
+    }
+
+    public void downloadOrStream (Video video, boolean download) {
+        if (download) {
+            DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(video.getUrl()));
+            request.setTitle(video.getTitle());
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            downloadManager.enqueue(request);
+            // NEED TO USE BROADCAST RECEIVERS TO HANDLE CLICKS ON THE NOTIFICATION
+        } else {
+            postIntent(video.getUrl());
         }
     }
 

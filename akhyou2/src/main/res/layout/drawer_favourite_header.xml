@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="32dp"
+    android:layout_marginTop="12dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:layout_alignParentTop="true" >
+<!--
+    <ImageView
+        android:id="@+id/favourite_icon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/ic_favorite_black_24dp"
+        android:alpha="0.54" />
+        -->
+
+    <TextView
+        android:id="@+id/drawer_favourites"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="@string/favourites_item"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:alpha="0.54" />
+
+    <!--
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_toRightOf="@id/favourite_icon"
+        android:layout_toEndOf="@id/favourite_icon"
+        -->
+
+</RelativeLayout>

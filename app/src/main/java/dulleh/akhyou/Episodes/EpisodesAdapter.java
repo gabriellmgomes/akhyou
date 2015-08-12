@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import dulleh.akhyou.Episodes.EpisodeObject;
 import dulleh.akhyou.R;
 
 public class EpisodesAdapter extends ArrayAdapter<EpisodeObject> {

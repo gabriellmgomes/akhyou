@@ -7,8 +7,11 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Anime.Providers.AnimeRushAnimeProvider;
 import dulleh.akhyou.Anime.Providers.AnimeProvider;
+import dulleh.akhyou.MainActivity;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Source;
+import dulleh.akhyou.Utils.Events.FavouriteEvent;
+import dulleh.akhyou.Utils.Events.LastAnimeEvent;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
 import dulleh.akhyou.Utils.GeneralUtils;
 import nucleus.presenter.RxPresenter;
@@ -20,13 +23,15 @@ import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
 public class AnimePresenter extends RxPresenter<AnimeFragment>{
+    private static final String LAST_ANIME_BUNDLE_KEY = "last_anime";
+
     private Subscription animeSubscription;
     private Subscription episodeSubscription;
     private Subscription videoSubscription;
     private AnimeProvider animeProvider;
 
-    private String lastUrl;
-    private String lastAnimeTitle;
+    private Anime lastAnime;
+    private boolean isRefreshing;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -34,10 +39,6 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
         if (animeProvider == null) {
             animeProvider = new AnimeRushAnimeProvider();
-        }
-
-        if (lastAnimeTitle != null) {
-            getView().setToolbarTitle(lastAnimeTitle);
         }
 
         // subscribe here (rather than in onTakeView() so that we don't receive
@@ -51,6 +52,12 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     @Override
     protected void onTakeView(AnimeFragment view) {
         super.onTakeView(view);
+        if (lastAnime.getTitle() != null) {
+            getView().setToolbarTitle(lastAnime.getTitle());
+        }
+        if (isRefreshing) {
+            getView().setRefreshing(true);
+        }
     }
 
     @Override
@@ -74,9 +81,10 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     }
 
     public void onEvent (OpenAnimeEvent event) {
-        this.lastUrl = event.anime.getUrl();
+        lastAnime = new Anime();
+        lastAnime.setUrl(event.anime.getUrl());
         // temporary title until rest of data has loaded so that users don't see a blank toolbar
-        this.lastAnimeTitle = event.anime.getTitle();
+        lastAnime.setTitle(event.anime.getTitle());
         fetchAnime();
     }
 
@@ -84,6 +92,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         if (getView() != null && !getView().isRefreshing()) {
             getView().setRefreshing(true);
         }
+        isRefreshing = true;
 
         if (animeSubscription != null) {
             if (!animeSubscription.isUnsubscribed()) {
@@ -94,16 +103,19 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         animeSubscription = Observable.defer(new Func0<Observable<Anime>>() {
             @Override
             public Observable<Anime> call() {
-                return Observable.just(animeProvider.fetchAnime(lastUrl));
+                return Observable.just(animeProvider.fetchAnime(lastAnime.getUrl()));
             }
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.deliver())
+                .compose(this.deliverLatestCache())
                 .subscribe(new Subscriber<Anime>() {
                     @Override
                     public void onNext(Anime anime) {
-                        getView().setAnime(anime);
+                        lastAnime = anime;
+                        getView().setAnime(lastAnime, inInFavourites());
+                        EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
+                        isRefreshing = false;
                     }
 
                     @Override
@@ -121,6 +133,16 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     }
 
                 });
+    }
+
+    public boolean inInFavourites () {
+        return ((MainActivity) getView().getActivity()).getPresenter().isInFavourites(new Anime().setTitle(lastAnime.getTitle()).setUrl(lastAnime.getUrl()));
+    }
+
+    public void onFavouriteCheckedChanged (boolean b) {
+        EventBus.getDefault().post(new FavouriteEvent(b, new Anime()
+                .setTitle(lastAnime.getTitle())
+                .setUrl(lastAnime.getUrl())));
     }
 
     public void fetchSources (String url) {
@@ -160,7 +182,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                 });
     }
 
-    public void fetchVideo (Source source) {
+    public void fetchVideo (Source source, boolean download) {
         if (videoSubscription != null) {
             if (!videoSubscription.isUnsubscribed()) {
                 videoSubscription.unsubscribe();
@@ -179,7 +201,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                 .subscribe(new Subscriber<Source>() {
                     @Override
                     public void onNext(Source source) {
-                        getView().shareVideo(source);
+                        getView().shareVideo(source, download);
                     }
 
                     @Override

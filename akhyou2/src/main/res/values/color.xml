@@ -5,12 +5,15 @@
     <color name="primary_dark">#616161</color>
     <color name="accent">#ffd8383d</color>
 
+    <color name="grey_lighter">#f2f2f2</color>
     <color name="grey_light">#ffe2e2e2</color>
     <color name="grey">#ffcccccc</color>
     <color name="grey_dark">#ffb9b9b9</color>
     <color name="grey_darker">#a4a4a4</color>
     <color name="grey_darkest">#909090</color>
     <color name="grey_darkestXX">#6c6c6c</color>
+    <color name="grey_transparent_lighter">#0a000000</color>
+    <color name="grey_transparent_light">#14000000</color>
     <color name="grey_transparent">#2b000000</color>
     <color name="grey_transparent_dark">#42000000</color>
 

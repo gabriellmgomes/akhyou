@@ -3,6 +3,9 @@
 
     <string name="settings_item">Settings</string>
     <string name="search_item">Search</string>
+    <string name="favourites_item">Favourites</string>
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
 
     <string name="theme_preference_key">theme_preference</string>
     <string name="theme_preference_title">Theme</string>

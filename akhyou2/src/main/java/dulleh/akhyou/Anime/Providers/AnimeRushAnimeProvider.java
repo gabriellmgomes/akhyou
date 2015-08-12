@@ -132,7 +132,9 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
         currentSplit = currentSplit[1].split("Description: ");
         anime.setDesc(currentSplit[1]);
 
-        anime.setGenres(currentSplit[0].split(", "));
+        String[] genres = currentSplit[0].split(", ");
+        anime.setGenres(genres);
+        anime.setGenresString(GeneralUtils.formattedGeneres(genres));
 
         return anime;
     }
