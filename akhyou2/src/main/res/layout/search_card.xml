@@ -14,7 +14,7 @@
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent" android:layout_height="150dp"
         android:paddingLeft="16dp" android:paddingStart="16dp"
-        android:background="@drawable/list_item_background" >
+        android:background="@drawable/card_item_background" >
 
         <ImageView
             android:id="@+id/image_view"

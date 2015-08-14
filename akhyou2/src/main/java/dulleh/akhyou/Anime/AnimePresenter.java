@@ -32,6 +32,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
     private Anime lastAnime;
     private boolean isRefreshing;
+    private static boolean needToGiveFavourite = false;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -47,16 +48,28 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
             EventBus.getDefault().registerSticky(this);
         }
 
+        if (savedState != null) {
+            lastAnime = savedState.getParcelable(LAST_ANIME_BUNDLE_KEY);
+        }
+
     }
 
     @Override
     protected void onTakeView(AnimeFragment view) {
         super.onTakeView(view);
-        if (lastAnime.getTitle() != null) {
-            getView().setToolbarTitle(lastAnime.getTitle());
+        if (lastAnime != null) {
+            if (lastAnime.getEpisodes() != null) {
+                getView().setAnime(lastAnime, isInFavourites());
+            } else if (lastAnime.getTitle() != null) {
+                view.setToolbarTitle(lastAnime.getTitle());
+            }
         }
         if (isRefreshing) {
             getView().setRefreshing(true);
+        }
+        if (needToGiveFavourite) {
+            view.setFavouriteChecked(isInFavourites());
+            needToGiveFavourite = false;
         }
     }
 
@@ -66,6 +79,12 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         EventBus.getDefault().unregister(this);
         animeProvider = null;
         unsubscribe();
+    }
+
+    @Override
+    protected void onSave(Bundle state) {
+        super.onSave(state);
+        state.putParcelable(LAST_ANIME_BUNDLE_KEY, lastAnime);
     }
 
     private void unsubscribe () {
@@ -113,14 +132,13 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     @Override
                     public void onNext(Anime anime) {
                         lastAnime = anime;
-                        getView().setAnime(lastAnime, inInFavourites());
-                        EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
                         isRefreshing = false;
+                        getView().setAnime(lastAnime, isInFavourites());
+                        EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
                     }
 
                     @Override
                     public void onCompleted() {
-                        getView().setRefreshing(false);
                         animeSubscription.unsubscribe();
                     }
 
@@ -135,14 +153,26 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                 });
     }
 
-    public boolean inInFavourites () {
-        return ((MainActivity) getView().getActivity()).getPresenter().isInFavourites(new Anime().setTitle(lastAnime.getTitle()).setUrl(lastAnime.getUrl()));
+    public Boolean isInFavourites() {
+        if (getView() != null) {
+            return ((MainActivity) getView().getActivity()).getPresenter().isInFavourites(new Anime().setTitle(lastAnime.getTitle()).setUrl(lastAnime.getUrl()));
+        }
+        return null;
+    }
+
+    public void setNeedToGiveFavourite (boolean bool) {
+        needToGiveFavourite = bool;
+    }
+
+    public void setMajorColour (int colour) {
+        lastAnime.setMajorColour(colour);
     }
 
     public void onFavouriteCheckedChanged (boolean b) {
         EventBus.getDefault().post(new FavouriteEvent(b, new Anime()
                 .setTitle(lastAnime.getTitle())
-                .setUrl(lastAnime.getUrl())));
+                .setUrl(lastAnime.getUrl())
+                .setMajorColour(lastAnime.getMajorColour())));
     }
 
     public void fetchSources (String url) {

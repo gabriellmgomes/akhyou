@@ -65,6 +65,7 @@ public class Anime implements Parcelable{
     private String[] genres;
     private String genresString;
     private List<Episode> episodes;
+    private int majorColour;
 
     public String getTitle() {
         return title;
@@ -153,6 +154,15 @@ public class Anime implements Parcelable{
 
     public Anime setStatus(String status) {
         this.status = status;
+        return this;
+    }
+
+    public int getMajorColour() {
+        return majorColour;
+    }
+
+    public Anime setMajorColour(int majorColour) {
+        this.majorColour = majorColour;
         return this;
     }
 

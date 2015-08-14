@@ -22,7 +22,9 @@ import rx.schedulers.Schedulers;
 public class SearchPresenter extends RxPresenter<SearchFragment> {
     private Subscription subscription;
     private SearchProvider searchProvider;
+
     private String searchTerm;
+    private boolean isRefreshing;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -32,13 +34,17 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
             searchProvider = new AnimeRushSearchProvider();
         }
 
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().registerSticky(this);
+        }
+
     }
 
     @Override
     protected void onTakeView(SearchFragment view) {
         super.onTakeView(view);
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().registerSticky(this);
+        if (isRefreshing) {
+            view.setRefreshing(true);
         }
     }
 
@@ -67,9 +73,10 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     }
 
     public void search () {
-        if (!getView().isRefreshing()) {
+        if (getView() != null && !getView().isRefreshing()) {
             getView().setRefreshing(true);
         }
+        isRefreshing = true;
 
         if (subscription != null) {
             if (!subscription.isUnsubscribed()) {
@@ -89,6 +96,7 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
                 .subscribe(new Subscriber<List<Anime>>() {
                     @Override
                     public void onNext(List<Anime> animes) {
+                        isRefreshing = false;
                         getView().setSearchResults(animes);
                     }
 

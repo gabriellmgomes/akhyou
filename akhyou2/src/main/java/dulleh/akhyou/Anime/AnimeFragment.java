@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -28,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -41,9 +41,9 @@ import dulleh.akhyou.Models.Source;
 import dulleh.akhyou.Models.Video;
 import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.AdapterClickListener;
-import dulleh.akhyou.Utils.Events.FavouriteEvent;
 import dulleh.akhyou.Utils.Events.SearchSubmittedEvent;
 import dulleh.akhyou.Utils.Events.SnackbarEvent;
+import dulleh.akhyou.Utils.PaletteTransform;
 import nucleus.factory.RequiresPresenter;
 import nucleus.view.NucleusSupportFragment;
 
@@ -120,7 +120,18 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         drawerCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                getPresenter().onFavouriteCheckedChanged(b);
+                final Boolean isInFavourites = getPresenter().isInFavourites();
+                if (isInFavourites != null) {
+                    // This is to ignore that first time the check box is changed.
+                    // Should have just set the listener in setAnime ;-;
+                    if (!b && isInFavourites) {
+                        getPresenter().onFavouriteCheckedChanged(false);
+                    } else if (b && !isInFavourites) {
+                        getPresenter().onFavouriteCheckedChanged(true);
+                    }
+                } else {
+                    getPresenter().setNeedToGiveFavourite(true);
+                }
             }
         });
 
@@ -200,6 +211,9 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         episodesAdapter.setAnime(anime.getEpisodes());
         setToolbarTitle(anime.getTitle());
 
+        final PaletteTransform paletteTransform = new PaletteTransform();
+        Picasso.with(getActivity()).invalidate(anime.getUrl());
+
         Picasso.with(getActivity())
                 .load(anime.getImageUrl())
                 .error(R.drawable.placeholder)
@@ -207,13 +221,30 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                         //.transform(blurTransform)
                 .fit()
                 .centerCrop()
-                .into(drawerImage);
+                .transform(paletteTransform)
+                .into(drawerImage, new Callback.EmptyCallback() {
+                    @Override
+                    public void onSuccess() {
+                        if (paletteTransform.getPallete() != null) {
+                            if (paletteTransform.getPallete().getVibrantSwatch() != null) {
+                                getPresenter().setMajorColour(paletteTransform.getPallete().getVibrantSwatch().getRgb());
+                            } else if (paletteTransform.getPallete().getLightVibrantSwatch() != null) {
+                                getPresenter().setMajorColour(paletteTransform.getPallete().getLightVibrantSwatch().getRgb());
+                            } else if (paletteTransform.getPallete().getDarkMutedSwatch() != null) {
+                                getPresenter().setMajorColour(paletteTransform.getPallete().getDarkMutedSwatch().getRgb());
+                            }
+                        } else {
+                            getPresenter().setMajorColour(getResources().getColor(R.color.accent));
+                        }
+                    }
+                });
 
         drawerDesc.setText(anime.getDesc());
         drawerGenres.setText(anime.getGenresString());
 
         // CHECK IF IN FAVOURITES
         drawerCheckBox.setChecked(isInFavourites);
+        getPresenter().setNeedToGiveFavourite(false);
 
         setRefreshing(false);
     }
@@ -244,6 +275,11 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
             EventBus.getDefault().post(new SnackbarEvent("An error occurred."));
             e.printStackTrace();
         }
+    }
+
+    public void setFavouriteChecked(boolean isInFavourites) {
+        drawerCheckBox.setChecked(isInFavourites);
+        getPresenter().setNeedToGiveFavourite(false);
     }
 
     public void postSuccess (String successMessage) {

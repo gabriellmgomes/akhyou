@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Anime.AnimeFragment;
@@ -62,6 +63,8 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
         }
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        //TextView drawerSettingsButton = (TextView) findViewById(R.id.drawer_settings_text);
         RelativeLayout drawerSettingsButton = (RelativeLayout) findViewById(R.id.drawer_settings);
         drawerSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,6 +234,7 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
 
                 if (fragmentManager.findFragmentByTag(SEARCH_FRAGMENT) != null) {
                     fragmentTransaction
+                            .hide(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT))
                             .addToBackStack(SEARCH_FRAGMENT);
                 }
 

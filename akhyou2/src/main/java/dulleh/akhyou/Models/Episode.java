@@ -1,8 +1,9 @@
 package dulleh.akhyou.Models;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Episode {
+public class Episode implements Serializable{
     private String title;
     private String url;
     private List<Source> sources;

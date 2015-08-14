@@ -15,9 +15,10 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
-            android:layout_width="match_parent" android:layout_height="match_parent"
-            android:background="@color/background_material_light"
-            android:clipToPadding="false" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:background="@color/background_material_light" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

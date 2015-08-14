@@ -1,10 +1,11 @@
 package dulleh.akhyou.Models;
 
+import java.io.Serializable;
 import java.util.List;
 
 import dulleh.akhyou.Models.SourceProviders.SourceProvider;
 
-public class Source {
+public class Source implements Serializable{
     private String title;
     private String pageUrl;
     private String embedUrl;

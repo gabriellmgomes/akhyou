@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -46,6 +47,11 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemViewHolder) {
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+            try {
+                itemViewHolder.iconView.setColorFilter(getItem(position).getMajorColour());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             itemViewHolder.titleView.setText(getItem(position).getTitle());
             itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -68,10 +74,12 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         public RelativeLayout itemView;
         public TextView titleView;
+        public ImageView iconView;
         public ItemViewHolder(View v) {
             super(v);
             itemView = (RelativeLayout) v.findViewById(R.id.drawer_favourite_item);
             titleView = (TextView) v.findViewById(R.id.favourite_title_view);
+            iconView = (ImageView) v.findViewById(R.id.favourite_icon);
         }
     }
 

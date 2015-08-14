@@ -114,30 +114,55 @@ public class MainPresenter extends RxPresenter<MainActivity>{
     }
 
     public boolean isInFavourites (Anime anime) {
-        if (new HashSet<>(sharedPreferences.getStringSet(FAVOURITES_PREF, new HashSet<>()))
-                .contains(GeneralUtils.serializeFavourite(anime))) {
-            return true;
+        for (String string : new HashSet<>(sharedPreferences.getStringSet(FAVOURITES_PREF, new HashSet<>()))) {
+            Anime favourite = GeneralUtils.deserializeFavourite(string);
+            if (favourite != null && favourite.getUrl().equals(anime.getUrl())) {
+                return true;
+            }
         }
         return false;
     }
 
-    public void onEvent (FavouriteEvent event) {
+    public void onEvent (FavouriteEvent event) throws Throwable{
+        // colors are inconsistent for whatever reason, causing duplicate favourites,
+        // so Set is pretty useless ;-;
         Set<String> favourites = new HashSet<>(sharedPreferences.getStringSet(FAVOURITES_PREF, new HashSet<>()));
         String serializedAnime = GeneralUtils.serializeFavourite(event.anime);
+
         if (serializedAnime != null) {
-            if (event.addToFavourites) {
-                favourites.add(serializedAnime);
-            } else if (favourites.contains(serializedAnime)) {
-                favourites.remove(serializedAnime);
+            if (event.isInFavourites == null) {
+                favourites = addOrRemoveFromFavourites(serializedAnime, new FavouriteEvent(isInFavourites(event.anime), event.addToFavourites, event.anime), favourites);
+            } else {
+                favourites = addOrRemoveFromFavourites(serializedAnime, event, favourites);
             }
         }
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putStringSet(FAVOURITES_PREF, favourites);
-        editor.apply();
-        refreshFavouritesList();
-        if (getView() != null) {
-            getView().favouritesChanged();
+
+        if (favourites != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putStringSet(FAVOURITES_PREF, favourites);
+            editor.apply();
+            refreshFavouritesList();
+            if (getView() != null) {
+                getView().favouritesChanged();
+            }
+        } else {
+            throw new Throwable("Cannot add or remove from favourites.");
         }
+    }
+
+    private Set<String> addOrRemoveFromFavourites (String serializedAnime, FavouriteEvent event, Set<String> favourites) {
+        if (!event.isInFavourites && event.addToFavourites) {
+            favourites.add(serializedAnime);
+            return favourites;
+        } else if (event.isInFavourites) {
+            for (String favourite : favourites) {
+                if (GeneralUtils.deserializeFavourite(favourite).getUrl().equals(event.anime.getUrl())) {
+                    favourites.remove(favourite);
+                    return favourites;
+                }
+            }
+        }
+        return null;
     }
 
     public void onEvent (LastAnimeEvent event) {

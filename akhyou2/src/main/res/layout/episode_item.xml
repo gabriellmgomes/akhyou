@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@color/background_material_light">
-
-    <TextView
-        android:id="@+id/episode_title_view"
-        android:textColor="@android:color/black"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="1dp"
-        android:gravity="center"
-        android:textSize="14sp"
-        android:padding="16dp"
-        android:singleLine="true"
-        android:ellipsize="start"
-        android:background="@drawable/list_item_background" />
-
-</LinearLayout>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/episode_title_view"
+    android:textColor="@android:color/black"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="1dp"
+    android:gravity="center"
+    android:textSize="14sp"
+    android:padding="16dp"
+    android:singleLine="true"
+    android:ellipsize="start"
+    android:background="@drawable/list_item_background" />
