@@ -24,8 +24,10 @@ import dulleh.akhyou.Utils.GeneralUtils;
 import nucleus.presenter.RxPresenter;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainPresenter extends RxPresenter<MainActivity>{
@@ -33,6 +35,8 @@ public class MainPresenter extends RxPresenter<MainActivity>{
     private static final String LAST_ANIME_TITLE_PREF = "last_anime_title_preference";
     private static final String LAST_ANIME_URL_PREF = "last_anime_url_preference";
     private static final String FAVOURITES_PREF = "favourites_preference";
+
+    private Subscription favouritesSubscription;
 
     public List<Anime> favouritesList;
 
@@ -48,6 +52,7 @@ public class MainPresenter extends RxPresenter<MainActivity>{
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().registerSticky(this);
         }
+        favouritesSubscription.unsubscribe();
     }
 
     public void setSharedPreferences (SharedPreferences sharedPreferences) {
@@ -126,10 +131,61 @@ public class MainPresenter extends RxPresenter<MainActivity>{
     public void onEvent (FavouriteEvent event) throws Throwable{
         // colors are inconsistent for whatever reason, causing duplicate favourites,
         // so Set is pretty useless ;-;
-        Set<String> favourites = new HashSet<>(sharedPreferences.getStringSet(FAVOURITES_PREF, new HashSet<>()));
-        String serializedAnime = GeneralUtils.serializeFavourite(event.anime);
 
-        if (serializedAnime != null) {
+        favouritesSubscription = Observable.defer(new Func0<Observable<String>>() {
+            @Override
+            public Observable<String> call() {
+                if (event.isInFavourites == null) {
+                    return Observable.just(GeneralUtils.serializeFavourite(event.anime));
+                }
+                return null;
+            }
+        })
+                .map(new Func1<String, Set<String>>() {
+                    @Override
+                    public Set<String> call(String serializedAnime) {
+                        if (serializedAnime != null) {
+                            if (event.isInFavourites == null) {
+                                Set<String> favourites = new HashSet<>(sharedPreferences.getStringSet(FAVOURITES_PREF, new HashSet<>()));
+                                return addOrRemoveFromFavourites(serializedAnime, new FavouriteEvent(isInFavourites(event.anime), event.addToFavourites, event.anime), favourites);
+                            } else {
+                                Set<String> favourites = new HashSet<>(sharedPreferences.getStringSet(FAVOURITES_PREF, new HashSet<>()));
+                                return addOrRemoveFromFavourites(serializedAnime, event, favourites);
+                            }
+                        }
+                        return null;
+                    }
+                })
+                .filter(favourites -> favourites != null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Set<String>>() {
+
+                    @Override
+                    public void onNext(Set<String> favourites) {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putStringSet(FAVOURITES_PREF, favourites);
+                        editor.apply();
+                        refreshFavouritesList();
+                        if (getView() != null) {
+                            getView().favouritesChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        this.unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        postError(e);
+                    }
+
+                });
+
+
+        /*if (serializedAnime != null) {
             if (event.isInFavourites == null) {
                 favourites = addOrRemoveFromFavourites(serializedAnime, new FavouriteEvent(isInFavourites(event.anime), event.addToFavourites, event.anime), favourites);
             } else {
@@ -147,7 +203,8 @@ public class MainPresenter extends RxPresenter<MainActivity>{
             }
         } else {
             throw new Throwable("Cannot add or remove from favourites.");
-        }
+        }*/
+
     }
 
     private Set<String> addOrRemoveFromFavourites (String serializedAnime, FavouriteEvent event, Set<String> favourites) {
@@ -194,6 +251,11 @@ public class MainPresenter extends RxPresenter<MainActivity>{
 
     public void onEvent (SnackbarEvent event) {
         getView().showSnackBar(event);
+    }
+
+    public void postError (Throwable e) {
+        e.printStackTrace();
+        EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
     }
 
 }

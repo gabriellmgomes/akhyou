@@ -217,28 +217,27 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
             case SEARCH_FRAGMENT:
                 fragmentTransaction
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .replace(R.id.container, new SearchFragment(), SEARCH_FRAGMENT)
-                        .commit();
+                        .replace(R.id.container, new SearchFragment(), SEARCH_FRAGMENT);
                 break;
 
             case ANIME_FRAGMENT:
-                fragmentTransaction.setCustomAnimations(R.anim.enter_right, 0, 0, R.anim.exit_right);
+                fragmentTransaction.setCustomAnimations(R.anim.enter_right, 0, 0, R.anim.exit_right)
+                        .replace(R.id.container, new AnimeFragment(), ANIME_FRAGMENT);
 
-                if (fragmentManager.findFragmentByTag(ANIME_FRAGMENT) != null) {
+                /*if (fragmentManager.findFragmentByTag(ANIME_FRAGMENT) != null) {
                     fragmentTransaction
                             .replace(R.id.container, new AnimeFragment(), ANIME_FRAGMENT);
                 } else {
                     fragmentTransaction
                             .add(R.id.container, new AnimeFragment(), ANIME_FRAGMENT);
-                }
+                }*/
 
                 if (fragmentManager.findFragmentByTag(SEARCH_FRAGMENT) != null) {
                     fragmentTransaction
-                            .hide(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT))
+                            //.hide(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT))
                             .addToBackStack(SEARCH_FRAGMENT);
                 }
 
-                fragmentTransaction.commit();
                 break;
 
             case SETTINGS_FRAGMENT:
@@ -256,9 +255,9 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
                             .addToBackStack(SEARCH_FRAGMENT);
                 }
 
-                fragmentTransaction.commit();
                 break;
         }
+        fragmentTransaction.commit();
     }
 
     public void showSnackBar (SnackbarEvent event) {

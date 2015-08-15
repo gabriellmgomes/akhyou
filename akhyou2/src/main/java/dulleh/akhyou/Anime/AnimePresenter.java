@@ -13,6 +13,7 @@ import dulleh.akhyou.Models.Source;
 import dulleh.akhyou.Utils.Events.FavouriteEvent;
 import dulleh.akhyou.Utils.Events.LastAnimeEvent;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
+import dulleh.akhyou.Utils.Events.SnackbarEvent;
 import dulleh.akhyou.Utils.GeneralUtils;
 import nucleus.presenter.RxPresenter;
 import rx.Observable;
@@ -133,7 +134,9 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     public void onNext(Anime anime) {
                         lastAnime = anime;
                         isRefreshing = false;
-                        getView().setAnime(lastAnime, isInFavourites());
+                        if (getView() != null) {
+                            getView().setAnime(lastAnime, isInFavourites());
+                        }
                         EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
                     }
 
@@ -145,7 +148,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        getView().postError(GeneralUtils.formatError(e));
+                        EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
                         getView().setRefreshing(false);
                         animeSubscription.unsubscribe();
                     }
@@ -194,7 +197,9 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                 .subscribe(new Subscriber<List<Source>>() {
                     @Override
                     public void onNext(List<Source> sources) {
-                        getView().showSourcesDialog(sources);
+                        if (getView() != null) {
+                            getView().showSourcesDialog(sources);
+                        }
                     }
 
                     @Override
@@ -205,7 +210,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        getView().postError(GeneralUtils.formatError(e));
+                        postError(e);
                         episodeSubscription.unsubscribe();
                     }
 
@@ -231,7 +236,9 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                 .subscribe(new Subscriber<Source>() {
                     @Override
                     public void onNext(Source source) {
-                        getView().shareVideo(source, download);
+                        if (getView() != null) {
+                            getView().shareVideo(source, download);
+                        }
                     }
 
                     @Override
@@ -242,11 +249,16 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        getView().postError(GeneralUtils.formatError(e));
+                        EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
                         videoSubscription.unsubscribe();
                     }
 
                 });
+    }
+
+    public void postError (Throwable e) {
+        e.printStackTrace();
+        EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
     }
 
 }

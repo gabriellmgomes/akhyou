@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -286,9 +287,6 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         EventBus.getDefault().post(new SnackbarEvent(successMessage));
     }
 
-    public void postError (String errorMessage) {
-        EventBus.getDefault().post(new SnackbarEvent(errorMessage));
-    }
 
     private void setRefreshLayoutStatus (boolean setEnabled) {
         refreshLayout.setEnabled(setEnabled);
@@ -352,7 +350,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                     .cancelable(true)
                     .show();
         } else {
-            postError("Error: No sources found.");
+            getPresenter().postError(new Throwable("Error: No sources found."));
         }
     }
 

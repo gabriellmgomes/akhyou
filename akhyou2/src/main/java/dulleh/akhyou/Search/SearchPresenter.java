@@ -10,6 +10,7 @@ import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Search.Providers.AnimeRushSearchProvider;
 import dulleh.akhyou.Search.Providers.SearchProvider;
 import dulleh.akhyou.Utils.Events.SearchEvent;
+import dulleh.akhyou.Utils.Events.SnackbarEvent;
 import dulleh.akhyou.Utils.GeneralUtils;
 import nucleus.presenter.RxPresenter;
 import rx.Observable;
@@ -97,7 +98,9 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
                     @Override
                     public void onNext(List<Anime> animes) {
                         isRefreshing = false;
-                        getView().setSearchResults(animes);
+                        if (getView() != null) {
+                            getView().setSearchResults(animes);
+                        }
                     }
 
                     @Override
@@ -107,12 +110,19 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
 
                     @Override
                     public void onError(Throwable e) {
-                        getView().setSearchResults(new ArrayList<>(0));
-                        getView().postError(GeneralUtils.formatError(e));
+                        if (getView() != null) {
+                            getView().setSearchResults(new ArrayList<>(0));
+                        }
+                        postError(e);
                         unsubscribe();
                         e.printStackTrace();
                     }
                 });
+    }
+
+    public void postError (Throwable e) {
+        e.printStackTrace();
+        EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
     }
 
 }

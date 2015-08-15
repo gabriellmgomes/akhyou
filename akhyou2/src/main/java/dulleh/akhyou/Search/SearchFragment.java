@@ -152,8 +152,4 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
         EventBus.getDefault().post(new SnackbarEvent("SUCCESS"));
     }
 
-    public void postError (String errorText) {
-        EventBus.getDefault().post(new SnackbarEvent(errorText));
-    }
-
 }

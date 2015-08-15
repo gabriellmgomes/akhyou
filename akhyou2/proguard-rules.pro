@@ -39,4 +39,5 @@
 
 -dontwarn org.w3c.dom.**
 
+-printmapping mapping.txt
 -dontobfuscate
