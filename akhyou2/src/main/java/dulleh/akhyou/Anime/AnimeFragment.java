@@ -238,15 +238,15 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         drawerCheckBox.setChecked(isInFavourites);
         getPresenter().setNeedToGiveFavourite(false);
 
-        setRefreshing(false);
+        updateRefreshing();
     }
 
     public void clearAdapter () {
         episodesAdapter.clear();
     }
 
-    public void setRefreshing (boolean bool) {
-        if (bool) {
+    public void updateRefreshing () {
+        if (getPresenter().isRefreshing) {
             TypedValue typedValue = new TypedValue();
             getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typedValue, true);
             refreshLayout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typedValue.resourceId));

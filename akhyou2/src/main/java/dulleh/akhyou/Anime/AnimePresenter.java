@@ -32,8 +32,8 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     private AnimeProvider animeProvider;
 
     private Anime lastAnime;
-    private boolean isRefreshing;
-    private static boolean needToGiveFavourite = false;
+    public boolean isRefreshing;
+    private static boolean needToGiveFavouriteState = false;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -58,6 +58,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     @Override
     protected void onTakeView(AnimeFragment view) {
         super.onTakeView(view);
+        view.updateRefreshing();
         if (lastAnime != null) {
             if (lastAnime.getEpisodes() != null) {
                 getView().setAnime(lastAnime, isInFavourites());
@@ -65,12 +66,9 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                 view.setToolbarTitle(lastAnime.getTitle());
             }
         }
-        if (isRefreshing) {
-            getView().setRefreshing(true);
-        }
-        if (needToGiveFavourite) {
+        if (needToGiveFavouriteState) {
             view.setFavouriteChecked(isInFavourites());
-            needToGiveFavourite = false;
+            needToGiveFavouriteState = false;
         }
     }
 
@@ -101,18 +99,18 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     }
 
     public void onEvent (OpenAnimeEvent event) {
-        lastAnime = new Anime();
-        lastAnime.setUrl(event.anime.getUrl());
-        // temporary title until rest of data has loaded so that users don't see a blank toolbar
-        lastAnime.setTitle(event.anime.getTitle());
+        lastAnime = event.anime;
+        if (lastAnime.getEpisodes() != null && getView() != null) {
+            getView().setAnime(lastAnime, isInFavourites());
+        }
         fetchAnime();
     }
 
     public void fetchAnime () {
-        if (getView() != null && !getView().isRefreshing()) {
-            getView().setRefreshing(true);
-        }
         isRefreshing = true;
+        if (getView() != null) {
+            getView().updateRefreshing();
+        }
 
         if (animeSubscription != null) {
             if (!animeSubscription.isUnsubscribed()) {
@@ -133,7 +131,6 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     @Override
                     public void onNext(Anime anime) {
                         lastAnime = anime;
-                        isRefreshing = false;
                         if (getView() != null) {
                             getView().setAnime(lastAnime, isInFavourites());
                         }
@@ -142,14 +139,16 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
                     @Override
                     public void onCompleted() {
+                        isRefreshing = false;
                         animeSubscription.unsubscribe();
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
-                        EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
-                        getView().setRefreshing(false);
+                        isRefreshing = false;
+                        getView().updateRefreshing();
+                        postError(e);
                         this.unsubscribe();
                     }
 
@@ -169,7 +168,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     }
 
     public void setNeedToGiveFavourite (boolean bool) {
-        needToGiveFavourite = bool;
+        needToGiveFavouriteState = bool;
     }
 
     public void setMajorColour (int colour) {
@@ -177,10 +176,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     }
 
     public void onFavouriteCheckedChanged (boolean b) {
-        EventBus.getDefault().post(new FavouriteEvent(b, new Anime()
-                .setTitle(lastAnime.getTitle())
-                .setUrl(lastAnime.getUrl())
-                .setMajorColour(lastAnime.getMajorColour())));
+        EventBus.getDefault().post(new FavouriteEvent(b, lastAnime));
     }
 
     public void fetchSources (String url) {
@@ -214,7 +210,6 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
                         postError(e);
                         this.unsubscribe();
                     }
@@ -248,13 +243,12 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
                     @Override
                     public void onCompleted() {
-                        videoSubscription.unsubscribe();
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
-                        EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
+                        postError(e);
                         this.unsubscribe();
                     }
 

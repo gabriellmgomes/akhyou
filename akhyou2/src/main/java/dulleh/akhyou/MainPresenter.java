@@ -61,6 +61,7 @@ public class MainPresenter extends RxPresenter<MainActivity>{
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().registerSticky(this);
         }
+        mainModel = null;
     }
 
     // must be done every time activity onCreate()

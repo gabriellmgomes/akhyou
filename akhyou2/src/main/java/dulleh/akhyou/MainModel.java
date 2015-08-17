@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import dulleh.akhyou.Models.Anime;
@@ -25,6 +26,7 @@ public class MainModel {
     */
     private static final String FAVOURITES_PREF = "favourites_preference";
 
+    private Map<String, Anime> favouritesMap;
     public ArrayList<Anime> favouritesList;
 
     public void setSharedPreferences(SharedPreferences sharedPreferences) {
@@ -41,7 +43,6 @@ public class MainModel {
                 favouritesList.add(anime);
             }
         }
-
     }
 
     public void saveFavourites () {
@@ -83,6 +84,11 @@ public class MainModel {
                 }
             }
         }
+
+    }
+
+    // Anime must be in favouritesList for this
+    public void updateFavourite (Anime favourite) {
 
     }
 
