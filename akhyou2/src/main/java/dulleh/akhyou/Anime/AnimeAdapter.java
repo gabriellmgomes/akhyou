@@ -16,12 +16,14 @@ import dulleh.akhyou.Utils.AdapterClickListener;
 public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder>{
     private List<Episode> episodes;
     private final AdapterClickListener<Episode> adapterClickListener;
-    //private final int watchedColor;
+    private final int unwatchedColour;
+    private final int watchedColour;
 
-    public AnimeAdapter(List<Episode> episodes, AdapterClickListener<Episode> episodeSelectedListener, int watchedColor) {
+    public AnimeAdapter(List<Episode> episodes, AdapterClickListener<Episode> episodeSelectedListener, int unwatchedColour, int watchedColour) {
         this.episodes = episodes;
         this.adapterClickListener = episodeSelectedListener;
-        //this.watchedColor = watchedColor;
+        this.unwatchedColour = unwatchedColour;
+        this.watchedColour = watchedColour;
     }
 
     public void setAnime (List<Episode> episodes) {
@@ -53,11 +55,13 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(final AnimeAdapter.ViewHolder viewHolder, final int position) {
         viewHolder.titleView.setText(episodes.get(position).getTitle());
-        /*
+
         if (episodes.get(position).isWatched()) {
-            viewHolder.titleView.setTextColor(watchedColor);
+            viewHolder.titleView.setTextColor(this.watchedColour);
+        } else {
+            viewHolder.titleView.setTextColor(unwatchedColour);
         }
-        */
+
         viewHolder.titleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,7 +77,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder>{
 
     public void setWatched (int position) {
         episodes.set(position, episodes.get(position).setWatched(true));
-        //this.notifyItemChanged(position);
+        this.notifyItemChanged(position);
     }
 
     public Episode getItemAtPosition (int position) {

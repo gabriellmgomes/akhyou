@@ -65,7 +65,10 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        episodesAdapter = new AnimeAdapter(new ArrayList<>(0), this, getResources().getColor(R.color.grey_dark));
+        TypedValue colorPrimaryDark = new TypedValue();
+        getActivity().getTheme().resolveAttribute(R.attr.colorPrimaryDark, colorPrimaryDark, true);
+
+        episodesAdapter = new AnimeAdapter(new ArrayList<>(0), this, getResources().getColor(android.R.color.black), getResources().getColor(colorPrimaryDark.resourceId));
         setHasOptionsMenu(true);
 
 /*
@@ -194,18 +197,6 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         searchView.clearFocus();
         refreshLayout.requestFocus();
 
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-/*
-        if (id == R.id.settings_item) {
-            EventBus.getDefault().post(new SettingsItemSelectedEvent());
-            return true;
-        }
-*/
-        return super.onOptionsItemSelected(item);
     }
 
     public void setAnime (Anime anime, boolean isInFavourites) {

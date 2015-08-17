@@ -75,7 +75,8 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
         favouritesList = (RecyclerView) findViewById(R.id.drawer_recycler_view);
         favouritesList.setLayoutManager(new LinearLayoutManager(this));
 
-        updateAndSetFavourites();
+        getPresenter().refreshFavouritesList();
+        setFavouritesAdapter();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //toolbar.setContentInsetsRelative(0, 0);
@@ -83,6 +84,7 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true); //MAY PRODUCE NULL POINTER EXCEPTION
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // must be after set as actionbar
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,33 +103,8 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
 
         } else if (savedInstanceState == null){
             getPresenter().onFreshStart(this);
-        } /*else { if (savedInstanceState != null) {
-            currentSelectedDrawerItem = savedInstanceState.getInt(CURRENT_DRAWER_SELECTED, 0);
-        }*/
+        }
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        //outState.putInt(CURRENT_DRAWER_SELECTED, currentSelectedDrawerItem);
-        super.onSaveInstanceState(outState, outPersistentState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        //currentSelectedDrawerItem = savedInstanceState.getInt(CURRENT_DRAWER_SELECTED, 0);
-        //navigationView.getMenu().getItem(currentSelectedDrawerItem).setChecked(true);
     }
 
     public void closeDrawer () {
@@ -292,20 +269,18 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
         closeDrawer();
     }
 
-    private void updateAndSetFavourites () {
-        getPresenter().refreshFavouritesList();
-        drawerAdapter = new DrawerAdapter(this, getPresenter().favouritesList);
+    private void setFavouritesAdapter () {
+        drawerAdapter = new DrawerAdapter(this, getPresenter().getFavourites());
         favouritesList.setAdapter(drawerAdapter);
     }
 
     public void favouritesChanged () {
         if (drawerAdapter != null) {
-            drawerAdapter.setFavourites(getPresenter().favouritesList);
+            drawerAdapter.setFavourites(getPresenter().getFavourites());
             drawerAdapter.notifyDataSetChanged();
         } else {
-            drawerAdapter = new DrawerAdapter(this, getPresenter().favouritesList);
+            drawerAdapter = new DrawerAdapter(this, getPresenter().getFavourites());
             favouritesList.setAdapter(drawerAdapter);
-            drawerAdapter.setFavourites(getPresenter().favouritesList);
             drawerAdapter.notifyDataSetChanged();
         }
     }

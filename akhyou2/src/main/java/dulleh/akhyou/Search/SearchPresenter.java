@@ -47,6 +47,10 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
         if (isRefreshing) {
             view.setRefreshing(true);
         }
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().registerSticky(this);
+        }
     }
 
     @Override

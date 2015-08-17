@@ -150,7 +150,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                         e.printStackTrace();
                         EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
                         getView().setRefreshing(false);
-                        animeSubscription.unsubscribe();
+                        this.unsubscribe();
                     }
 
                 });
@@ -158,7 +158,12 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
     public Boolean isInFavourites() {
         if (getView() != null) {
-            return ((MainActivity) getView().getActivity()).getPresenter().isInFavourites(new Anime().setTitle(lastAnime.getTitle()).setUrl(lastAnime.getUrl()));
+            try {
+                // PLEASE TELL ME THERE'S A BETTER WAY ;-;
+                return ((MainActivity) getView().getActivity()).getPresenter().getModel().isInFavourites(lastAnime.getUrl());
+            } catch (Exception e) {
+                postError(e);
+            }
         }
         return null;
     }
@@ -211,7 +216,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         postError(e);
-                        episodeSubscription.unsubscribe();
+                        this.unsubscribe();
                     }
 
                 });
@@ -250,7 +255,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
-                        videoSubscription.unsubscribe();
+                        this.unsubscribe();
                     }
 
                 });
