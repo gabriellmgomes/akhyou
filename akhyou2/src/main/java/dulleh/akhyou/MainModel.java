@@ -13,7 +13,13 @@ import dulleh.akhyou.Utils.Events.LastAnimeEvent;
 import dulleh.akhyou.Utils.GeneralUtils;
 
 public class MainModel {
+    private static final String FAVOURITES_PREF = "favourites_preference";
+    private static final String LAST_ANIME_PREF = "last_anime_preference";
+
     private SharedPreferences sharedPreferences;
+    // The key is the anime url.
+    private HashMap<String, Anime> favouritesMap;
+    private Anime lastAnime;
 
     public void setSharedPreferences(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
@@ -21,17 +27,36 @@ public class MainModel {
 
     public MainModel (SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
+        refreshFavouritesList();
+        refreshLastAnime();
     }
+
+    public void refreshFavouritesList () {
+        Set<String> favourites = new HashSet<>(sharedPreferences.getStringSet(FAVOURITES_PREF, new HashSet<>()));
+
+        favouritesMap = new HashMap<>(favourites.size());
+        for (String favourite : favourites) {
+            Anime anime = GeneralUtils.deserializeAnime(favourite);
+            if (anime != null) {
+                favouritesMap.put(anime.getUrl(), anime);
+            }
+        }
+    }
+
+    public void refreshLastAnime () {
+        // need to check for null or else deserialize will throw null pointer exception
+        String serializedAnime = sharedPreferences.getString(LAST_ANIME_PREF, null);
+        if (serializedAnime != null) {
+            lastAnime = GeneralUtils.deserializeAnime(serializedAnime);
+        }
+    }
+
 
     /*
     *
-    * FAVOURITES
+    *               FAVOURITES
     *
     */
-    private static final String FAVOURITES_PREF = "favourites_preference";
-
-    // The key is the anime url.
-    private HashMap<String, Anime> favouritesMap;
 
     public void setFavourites (ArrayList<Anime> favourites) {
         for (Anime favourite : favourites) {
@@ -46,18 +71,6 @@ public class MainModel {
             return favourites;
         }
         return null;
-    }
-
-    public void refreshFavouritesList () {
-        Set<String> favourites = new HashSet<>(sharedPreferences.getStringSet(FAVOURITES_PREF, new HashSet<>()));
-
-        favouritesMap = new HashMap<>(favourites.size());
-        for (String favourite : favourites) {
-            Anime anime = GeneralUtils.deserializeAnime(favourite);
-            if (anime != null) {
-                favouritesMap.put(anime.getUrl(), anime);
-            }
-        }
     }
 
     public void saveFavourites () {
@@ -95,34 +108,29 @@ public class MainModel {
 
     }
 
-    // Anime must be in favouritesList for this
-    public void updateFavourite (Anime favourite) {
+    // Returns true if a favourite was updated. False if not.
+    public boolean updateFavourite (Anime favourite) {
         if (favouritesMap.keySet().contains(favourite.getUrl())) {
             favouritesMap.put(favourite.getUrl(), favourite);
+            return true;
         }
+        return false;
     }
 
 
     /*
     *
-    * LAST ANIME
+    *               LAST ANIME
     *
     */
-    private static final String LAST_ANIME_PREF = "last_anime_preference";
-
     public Anime getLastAnime () {
-        // need to check for null or else deserialize will throw null pointer exception
-        String serializedAnime = sharedPreferences.getString(LAST_ANIME_PREF, null);
-        if (serializedAnime != null) {
-            return GeneralUtils.deserializeAnime(serializedAnime);
-        }
-        return null;
+        return lastAnime;
     }
 
-    public void saveNewLastAnime (LastAnimeEvent event) {
+    public void saveNewLastAnime (Anime anime) {
         if (sharedPreferences != null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(LAST_ANIME_PREF, GeneralUtils.serializeAnime(event.anime));
+                editor.putString(LAST_ANIME_PREF, GeneralUtils.serializeAnime(anime));
             editor.apply();
         }
     }

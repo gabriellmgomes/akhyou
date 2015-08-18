@@ -60,10 +60,10 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        TypedValue colorPrimaryDark = new TypedValue();
-        getActivity().getTheme().resolveAttribute(R.attr.colorPrimaryDark, colorPrimaryDark, true);
+        TypedValue colorPrimary = new TypedValue();
+        getActivity().getTheme().resolveAttribute(R.attr.colorPrimary, colorPrimary, true);
 
-        episodesAdapter = new AnimeAdapter(new ArrayList<>(0), this, getResources().getColor(android.R.color.black), getResources().getColor(colorPrimaryDark.resourceId));
+        episodesAdapter = new AnimeAdapter(new ArrayList<>(), this, getResources().getColor(android.R.color.black), getResources().getColor(colorPrimary.resourceId));
         setHasOptionsMenu(true);
 
 /*

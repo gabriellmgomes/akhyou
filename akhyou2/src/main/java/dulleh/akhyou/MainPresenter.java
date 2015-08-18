@@ -3,16 +3,12 @@ package dulleh.akhyou;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.HummingbirdApi;
 import dulleh.akhyou.Utils.Events.FavouriteEvent;
-import dulleh.akhyou.Utils.Events.FavouriteUpdateEvent;
 import dulleh.akhyou.Utils.Events.LastAnimeEvent;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
 import dulleh.akhyou.Utils.Events.SearchEvent;
@@ -118,22 +114,13 @@ public class MainPresenter extends RxPresenter<MainActivity>{
 
     // Must have run setSharedPreferences() before this.
     public void onFreshStart (MainActivity mainActivity) {
-        /*String lastAnimeTitle = mainModel.getLastAnimeTitle();
-        String lastAnimeUrl = mainModel.getLastAnimeUrl();
-
-        if (lastAnimeTitle != null && lastAnimeUrl != null) {
-            EventBus.getDefault().postSticky(new OpenAnimeEvent(new Anime().setTitle(lastAnimeTitle).setUrl(lastAnimeUrl)));
-            mainActivity.requestFragment(MainActivity.ANIME_FRAGMENT);*/
-        Anime lastAnime = mainModel.getLastAnime();
-        if (lastAnime != null) {
-            EventBus.getDefault().postSticky(new OpenAnimeEvent(lastAnime));
+        if (mainModel.getLastAnime() != null) {
+            EventBus.getDefault().postSticky(new OpenAnimeEvent(mainModel.getLastAnime()));
             mainActivity.requestFragment(MainActivity.ANIME_FRAGMENT);
         } else {
             EventBus.getDefault().postSticky(new SearchEvent("Hyouka"));
             mainActivity.requestFragment(MainActivity.SEARCH_FRAGMENT);
         }
-        //refreshFavouritesList();
-        mainModel.refreshFavouritesList();
     }
 
     public void onEvent (FavouriteEvent event) {
@@ -149,15 +136,13 @@ public class MainPresenter extends RxPresenter<MainActivity>{
         }
     }
 
-    public void onEvent (FavouriteUpdateEvent favouriteUpdateEvent) {
-        mainModel.updateFavourite(favouriteUpdateEvent.favourite);
-        if (getView() != null) {
-            getView().favouritesChanged();
-        }
-    }
-
     public void onEvent (LastAnimeEvent event) {
-        mainModel.saveNewLastAnime(event);
+        mainModel.saveNewLastAnime(event.anime);
+        if (mainModel.updateFavourite(event.anime)) {
+            if (getView() != null) {
+                getView().favouritesChanged();
+            }
+        }
     }
 
 

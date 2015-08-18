@@ -18,7 +18,6 @@ import dulleh.akhyou.Models.Source;
 import dulleh.akhyou.Models.Video;
 import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.Events.FavouriteEvent;
-import dulleh.akhyou.Utils.Events.FavouriteUpdateEvent;
 import dulleh.akhyou.Utils.Events.LastAnimeEvent;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
 import dulleh.akhyou.Utils.Events.SnackbarEvent;
@@ -91,8 +90,6 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     @Override
     protected void onSave(Bundle state) {
         super.onSave(state);
-        EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
-        EventBus.getDefault().post(new FavouriteUpdateEvent(lastAnime));
         state.putParcelable(LAST_ANIME_BUNDLE_KEY, lastAnime);
     }
 
@@ -110,7 +107,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
     public void onEvent (OpenAnimeEvent event) {
         lastAnime = event.anime;
-        if (lastAnime.getEpisodes() != null) {
+        if (lastAnime != null && lastAnime.getEpisodes() != null) {
             getView().setAnime(lastAnime, isInFavourites());
             fetchAnime(true);
         } else {
@@ -149,6 +146,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                         if (getView() != null) {
                             getView().setAnime(lastAnime, isInFavourites());
                         }
+                        EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
                     }
 
                     @Override
