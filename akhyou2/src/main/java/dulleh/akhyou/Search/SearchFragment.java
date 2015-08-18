@@ -26,8 +26,6 @@ import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.AdapterClickListener;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
 import dulleh.akhyou.Utils.Events.SearchEvent;
-import dulleh.akhyou.Utils.Events.SettingsItemSelectedEvent;
-import dulleh.akhyou.Utils.Events.SnackbarEvent;
 import nucleus.factory.RequiresPresenter;
 import nucleus.view.NucleusSupportFragment;
 
@@ -102,22 +100,6 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
         refreshLayout.requestFocus();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-/*
-        if (id == R.id.settings_item) {
-            EventBus.getDefault().post(new SettingsItemSelectedEvent());
-            return true;
-        }
-*/
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void clearAdapter () {
-        searchAdapter.clear();
-    }
-
     public void setSearchResults (List<Anime> animes) {
         searchAdapter.setAnimes(animes);
         setRefreshing(false);
@@ -146,10 +128,6 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
 
     public void addToSearchResults (Anime anime) {
         searchAdapter.addAnime(anime);
-    }
-
-    public void postSuccess () {
-        EventBus.getDefault().post(new SnackbarEvent("SUCCESS"));
     }
 
 }

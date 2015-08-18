@@ -129,4 +129,8 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
         EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
     }
 
+    public void postSuccess () {
+        EventBus.getDefault().post(new SnackbarEvent("SUCCESS"));
+    }
+
 }

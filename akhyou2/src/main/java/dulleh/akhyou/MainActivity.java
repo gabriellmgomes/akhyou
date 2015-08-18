@@ -3,8 +3,6 @@ package dulleh.akhyou;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -16,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Anime.AnimeFragment;
@@ -43,8 +40,6 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
     public static final String ANIME_FRAGMENT = "ANI";
     public static final String SETTINGS_FRAGMENT = "SET";
 
-    //private static int currentSelectedDrawerItem = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme();
@@ -64,7 +59,6 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        //TextView drawerSettingsButton = (TextView) findViewById(R.id.drawer_settings_text);
         RelativeLayout drawerSettingsButton = (RelativeLayout) findViewById(R.id.drawer_settings);
         drawerSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,17 +195,8 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
                 fragmentTransaction.setCustomAnimations(R.anim.enter_right, 0, 0, R.anim.exit_right)
                         .replace(R.id.container, new AnimeFragment(), ANIME_FRAGMENT);
 
-                /*if (fragmentManager.findFragmentByTag(ANIME_FRAGMENT) != null) {
-                    fragmentTransaction
-                            .replace(R.id.container, new AnimeFragment(), ANIME_FRAGMENT);
-                } else {
-                    fragmentTransaction
-                            .add(R.id.container, new AnimeFragment(), ANIME_FRAGMENT);
-                }*/
-
                 if (fragmentManager.findFragmentByTag(SEARCH_FRAGMENT) != null) {
                     fragmentTransaction
-                            //.hide(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT))
                             .addToBackStack(SEARCH_FRAGMENT);
                 }
 

@@ -32,7 +32,6 @@ public class MainModel {
 
     // The key is the anime url.
     private HashMap<String, Anime> favouritesMap;
-    //public ArrayList<Anime> favouritesList;
 
     public void setFavourites (ArrayList<Anime> favourites) {
         for (Anime favourite : favourites) {
@@ -110,16 +109,6 @@ public class MainModel {
     *
     */
     private static final String LAST_ANIME_PREF = "last_anime_preference";
-    /*private static final String LAST_ANIME_TITLE_PREF = "last_anime_title_preference";
-    private static final String LAST_ANIME_URL_PREF = "last_anime_url_preference";
-
-    public String getLastAnimeTitle () {
-        return sharedPreferences.getString(LAST_ANIME_TITLE_PREF, null);
-    }
-
-    public String getLastAnimeUrl () {
-        return sharedPreferences.getString(LAST_ANIME_URL_PREF, null);
-    }*/
 
     public Anime getLastAnime () {
         // need to check for null or else deserialize will throw null pointer exception
@@ -134,8 +123,6 @@ public class MainModel {
         if (sharedPreferences != null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(LAST_ANIME_PREF, GeneralUtils.serializeAnime(event.anime));
-            //editor.putString(LAST_ANIME_TITLE_PREF, event.anime.getTitle());
-            //editor.putString(LAST_ANIME_URL_PREF, event.anime.getUrl());
             editor.apply();
         }
     }

@@ -259,10 +259,6 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         getPresenter().setNeedToGiveFavourite(false);
     }
 
-    public void postSuccess (String successMessage) {
-        EventBus.getDefault().post(new SnackbarEvent(successMessage));
-    }
-
 
     private void setRefreshLayoutStatus (boolean setEnabled) {
         refreshLayout.setEnabled(setEnabled);

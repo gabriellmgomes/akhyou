@@ -1,4 +1,4 @@
-package dulleh.akhyou.Anime.Providers;
+package dulleh.akhyou.Models.AnimeProviders;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;

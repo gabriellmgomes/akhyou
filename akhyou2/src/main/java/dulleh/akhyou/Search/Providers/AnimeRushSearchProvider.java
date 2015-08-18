@@ -59,8 +59,15 @@ public class AnimeRushSearchProvider implements SearchProvider{
         for (Element searchResult : searchResults) {
             Anime anime = new Anime();
 
-            anime.setTitle(searchResult.select("h3").text().trim())
-                    .setUrl(searchResult.select("a.highlightit").attr("href").trim())
+            anime.setTitle(searchResult.select("h3").text().trim()
+            /*
+            * Temporary fix for bug with AnimeRush search
+            * can reproduce bug by including spaces in between letters in your search
+            * E.G. "de tective co   nan"
+            */
+                    .replaceAll("<b>", "").replaceAll("</b>", ""));
+
+            anime.setUrl(searchResult.select("a.highlightit").attr("href").trim())
                     .setDesc(searchResult.select("p").text().trim())
                     .setImageUrl(searchResult.select("object.highlightz").attr("data").trim());
 

@@ -10,8 +10,8 @@ import android.support.v7.graphics.Palette;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import dulleh.akhyou.Anime.Providers.AnimeRushAnimeProvider;
-import dulleh.akhyou.Anime.Providers.AnimeProvider;
+import dulleh.akhyou.Models.AnimeProviders.AnimeRushAnimeProvider;
+import dulleh.akhyou.Models.AnimeProviders.AnimeProvider;
 import dulleh.akhyou.MainActivity;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Source;
@@ -172,6 +172,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     public Boolean isInFavourites() {
         if (getView() != null) {
             try {
+                //TODO: THIS IS TERRIBLE. >>> FIND A BETTER WAY
                 // PLEASE TELL ME THERE'S A BETTER WAY ;-;
                 return ((MainActivity) getView().getActivity()).getPresenter().getModel().isInFavourites(lastAnime.getUrl());
             } catch (Exception e) {
@@ -307,6 +308,10 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     public void postError (Throwable e) {
         e.printStackTrace();
         EventBus.getDefault().post(new SnackbarEvent(GeneralUtils.formatError(e)));
+    }
+
+    public void postSuccess (String successMessage) {
+        EventBus.getDefault().post(new SnackbarEvent(successMessage));
     }
 
 }
