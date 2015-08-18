@@ -226,8 +226,8 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         updateRefreshing();
     }
 
-    public void clearAdapter () {
-        episodesAdapter.clear();
+    public void notifyAdapter () {
+        episodesAdapter.notifyDataSetChanged();
     }
 
     public void updateRefreshing () {
@@ -268,6 +268,11 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     public void onCLick(Episode episode, @Nullable Integer position) {
         getPresenter().fetchSources(episode.getUrl());
         this.position = position;
+    }
+
+    @Override
+    public void onLongClick(Episode item, @Nullable Integer position) {
+        getPresenter().flipWatched(position);
     }
 
     public void showSourcesDialog (List<Source> sources) {

@@ -68,6 +68,14 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder>{
                 adapterClickListener.onCLick(episodes.get(position), position);
             }
         });
+
+        viewHolder.titleView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                adapterClickListener.onLongClick(episodes.get(position), position);
+                return false;
+            }
+        });
     }
 
     @Override

@@ -254,6 +254,11 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
         closeDrawer();
     }
 
+    @Override
+    public void onLongClick(Anime item, @Nullable Integer position) {
+
+    }
+
     private void setFavouritesAdapter () {
         drawerAdapter = new DrawerAdapter(this, getPresenter().getFavourites());
         favouritesList.setAdapter(drawerAdapter);

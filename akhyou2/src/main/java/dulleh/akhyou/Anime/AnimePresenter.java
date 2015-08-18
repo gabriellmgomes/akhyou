@@ -91,6 +91,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     @Override
     protected void onSave(Bundle state) {
         super.onSave(state);
+        EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
         EventBus.getDefault().post(new FavouriteUpdateEvent(lastAnime));
         state.putParcelable(LAST_ANIME_BUNDLE_KEY, lastAnime);
     }
@@ -148,7 +149,6 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                         if (getView() != null) {
                             getView().setAnime(lastAnime, isInFavourites());
                         }
-                        EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
                     }
 
                     @Override
@@ -227,6 +227,11 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         if (intent.resolveActivity(getView().getActivity().getPackageManager()) != null) {
             getView().startActivity(intent);
         }
+    }
+
+    public void flipWatched (int position) {
+        lastAnime.getEpisodes().get(position).flipWatched();
+        getView().notifyAdapter();
     }
 
     public void fetchSources (String url) {

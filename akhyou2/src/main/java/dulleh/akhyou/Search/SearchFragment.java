@@ -126,6 +126,11 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
         EventBus.getDefault().postSticky(new OpenAnimeEvent(anime));
     }
 
+    @Override
+    public void onLongClick(Anime item, @Nullable Integer position) {
+
+    }
+
     public void addToSearchResults (Anime anime) {
         searchAdapter.addAnime(anime);
     }

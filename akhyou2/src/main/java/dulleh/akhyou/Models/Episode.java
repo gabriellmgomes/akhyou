@@ -45,4 +45,8 @@ public class Episode implements Serializable{
         return this;
     }
 
+    public void flipWatched () {
+        watched = !watched;
+    }
+
 }
