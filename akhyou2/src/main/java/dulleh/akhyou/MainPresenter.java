@@ -12,6 +12,7 @@ import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.HummingbirdApi;
 import dulleh.akhyou.Utils.Events.FavouriteEvent;
+import dulleh.akhyou.Utils.Events.FavouriteUpdateEvent;
 import dulleh.akhyou.Utils.Events.LastAnimeEvent;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
 import dulleh.akhyou.Utils.Events.SearchEvent;
@@ -39,18 +40,15 @@ public class MainPresenter extends RxPresenter<MainActivity>{
 
         if (savedState != null) {
             //favouritesList = savedState.getParcelableArrayList(FAVOURITES_KEY);
-            mainModel.favouritesList = savedState.getParcelableArrayList(FAVOURITES_KEY);
+            mainModel.setFavourites(savedState.getParcelableArrayList(FAVOURITES_KEY));
         }
     }
 
     @Override
     protected void onSave(Bundle state) {
         super.onSave(state);
-        //if (favouritesList != null) {
-        //    state.putParcelableArrayList(FAVOURITES_KEY, favouritesList);
-        //}
-        if (mainModel.favouritesList != null) {
-            state.putParcelableArrayList(FAVOURITES_KEY, mainModel.favouritesList);
+        if (mainModel.getFavourites() != null) {
+            state.putParcelableArrayList(FAVOURITES_KEY, mainModel.getFavourites());
         }
         mainModel.saveFavourites();
     }
@@ -115,16 +113,20 @@ public class MainPresenter extends RxPresenter<MainActivity>{
     }
 
     public List<Anime> getFavourites () {
-        return mainModel.favouritesList;
+        return mainModel.getFavourites();
     }
 
     // Must have run setSharedPreferences() before this.
     public void onFreshStart (MainActivity mainActivity) {
-        String lastAnimeTitle = mainModel.getLastAnimeTitle();
+        /*String lastAnimeTitle = mainModel.getLastAnimeTitle();
         String lastAnimeUrl = mainModel.getLastAnimeUrl();
 
         if (lastAnimeTitle != null && lastAnimeUrl != null) {
             EventBus.getDefault().postSticky(new OpenAnimeEvent(new Anime().setTitle(lastAnimeTitle).setUrl(lastAnimeUrl)));
+            mainActivity.requestFragment(MainActivity.ANIME_FRAGMENT);*/
+        Anime lastAnime = mainModel.getLastAnime();
+        if (lastAnime != null) {
+            EventBus.getDefault().postSticky(new OpenAnimeEvent(lastAnime));
             mainActivity.requestFragment(MainActivity.ANIME_FRAGMENT);
         } else {
             EventBus.getDefault().postSticky(new SearchEvent("Hyouka"));
@@ -137,18 +139,21 @@ public class MainPresenter extends RxPresenter<MainActivity>{
     public void onEvent (FavouriteEvent event) {
         // colors are inconsistent for whatever reason, causing duplicate favourites,
         // so Set is pretty useless ;-;
-
         try {
             mainModel.addOrRemoveFromFavourites(event);
-
             if (getView() != null) {
                 getView().favouritesChanged();
             }
-
         } catch (Exception e) {
             postError(e);
         }
+    }
 
+    public void onEvent (FavouriteUpdateEvent favouriteUpdateEvent) {
+        mainModel.updateFavourite(favouriteUpdateEvent.favourite);
+        if (getView() != null) {
+            getView().favouritesChanged();
+        }
     }
 
     public void onEvent (LastAnimeEvent event) {

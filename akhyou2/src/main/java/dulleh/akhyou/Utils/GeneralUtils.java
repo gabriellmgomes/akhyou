@@ -93,7 +93,7 @@ public class GeneralUtils {
 
     // Need to handle null by yourself
     @Nullable
-    public static String serializeFavourite (Anime anime) {
+    public static String serializeAnime(Anime anime) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.writeValueAsString(anime);
@@ -105,7 +105,7 @@ public class GeneralUtils {
 
     // Need to handle null by yourself
     @Nullable
-    public static Anime deserializeFavourite (String serializedFavourite) {
+    public static Anime deserializeAnime(String serializedFavourite) {
         try {
             return new ObjectMapper().readValue(serializedFavourite, Anime.class);
         }catch (IOException io) {

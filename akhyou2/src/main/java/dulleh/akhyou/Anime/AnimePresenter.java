@@ -1,6 +1,11 @@
 package dulleh.akhyou.Anime;
 
+import android.app.DownloadManager;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.graphics.Palette;
 
 import java.util.List;
 
@@ -10,7 +15,10 @@ import dulleh.akhyou.Anime.Providers.AnimeProvider;
 import dulleh.akhyou.MainActivity;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Source;
+import dulleh.akhyou.Models.Video;
+import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.Events.FavouriteEvent;
+import dulleh.akhyou.Utils.Events.FavouriteUpdateEvent;
 import dulleh.akhyou.Utils.Events.LastAnimeEvent;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
 import dulleh.akhyou.Utils.Events.SnackbarEvent;
@@ -61,7 +69,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         view.updateRefreshing();
         if (lastAnime != null) {
             if (lastAnime.getEpisodes() != null) {
-                getView().setAnime(lastAnime, isInFavourites());
+                view.setAnime(lastAnime, isInFavourites());
             } else if (lastAnime.getTitle() != null) {
                 view.setToolbarTitle(lastAnime.getTitle());
             }
@@ -83,6 +91,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     @Override
     protected void onSave(Bundle state) {
         super.onSave(state);
+        EventBus.getDefault().post(new FavouriteUpdateEvent(lastAnime));
         state.putParcelable(LAST_ANIME_BUNDLE_KEY, lastAnime);
     }
 
@@ -100,13 +109,15 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
     public void onEvent (OpenAnimeEvent event) {
         lastAnime = event.anime;
-        if (lastAnime.getEpisodes() != null && getView() != null) {
+        if (lastAnime.getEpisodes() != null) {
             getView().setAnime(lastAnime, isInFavourites());
+            fetchAnime(true);
+        } else {
+            fetchAnime(false);
         }
-        fetchAnime();
     }
 
-    public void fetchAnime () {
+    public void fetchAnime (boolean updateCached) {
         isRefreshing = true;
         if (getView() != null) {
             getView().updateRefreshing();
@@ -121,6 +132,9 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         animeSubscription = Observable.defer(new Func0<Observable<Anime>>() {
             @Override
             public Observable<Anime> call() {
+                if (updateCached) {
+                    return Observable.just(animeProvider.updateCachedAnime(lastAnime));
+                }
                 return Observable.just(animeProvider.fetchAnime(lastAnime.getUrl()));
             }
         })
@@ -175,8 +189,43 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         lastAnime.setMajorColour(colour);
     }
 
+    public void setMajorColour (Palette palette) {
+        if (palette != null) {
+            if (palette.getVibrantSwatch() != null) {
+                lastAnime.setMajorColour(palette.getVibrantSwatch().getRgb());
+            } else if (palette.getLightVibrantSwatch() != null) {
+                lastAnime.setMajorColour(palette.getLightVibrantSwatch().getRgb());
+            } else if (palette.getDarkMutedSwatch() != null) {
+                lastAnime.setMajorColour(palette.getDarkMutedSwatch().getRgb());
+            }
+        } else {
+            lastAnime.setMajorColour(getView().getResources().getColor(R.color.accent));
+        }
+    }
+
     public void onFavouriteCheckedChanged (boolean b) {
         EventBus.getDefault().post(new FavouriteEvent(b, lastAnime));
+    }
+
+    public void downloadOrStream (Video video, boolean download) {
+        if (download) {
+            DownloadManager downloadManager = (DownloadManager) getView().getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(video.getUrl()));
+            request.setTitle(video.getTitle());
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            downloadManager.enqueue(request);
+            // NEED TO USE BROADCAST RECEIVERS TO HANDLE CLICKS ON THE NOTIFICATION
+        } else {
+            postIntent(video.getUrl());
+        }
+    }
+
+    private void postIntent (String videoUrl) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.parse(videoUrl), "video/*");
+        if (intent.resolveActivity(getView().getActivity().getPackageManager()) != null) {
+            getView().startActivity(intent);
+        }
     }
 
     public void fetchSources (String url) {

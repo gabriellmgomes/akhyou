@@ -1,12 +1,7 @@
 package dulleh.akhyou.Anime;
 
-import android.app.DownloadManager;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -110,7 +105,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getPresenter().fetchAnime();
+                getPresenter().fetchAnime(true);
             }
         });
 
@@ -217,17 +212,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                 .into(drawerImage, new Callback.EmptyCallback() {
                     @Override
                     public void onSuccess() {
-                        if (paletteTransform.getPallete() != null) {
-                            if (paletteTransform.getPallete().getVibrantSwatch() != null) {
-                                getPresenter().setMajorColour(paletteTransform.getPallete().getVibrantSwatch().getRgb());
-                            } else if (paletteTransform.getPallete().getLightVibrantSwatch() != null) {
-                                getPresenter().setMajorColour(paletteTransform.getPallete().getLightVibrantSwatch().getRgb());
-                            } else if (paletteTransform.getPallete().getDarkMutedSwatch() != null) {
-                                getPresenter().setMajorColour(paletteTransform.getPallete().getDarkMutedSwatch().getRgb());
-                            }
-                        } else {
-                            getPresenter().setMajorColour(getResources().getColor(R.color.accent));
-                        }
+                        getPresenter().setMajorColour(paletteTransform.getPallete());
                     }
                 });
 
@@ -352,7 +337,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        downloadOrStream(videos.get(i), download);
+                        getPresenter().downloadOrStream(videos.get(i), download);
                     }
                 })
                 .show();
@@ -376,30 +361,9 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
 
     public void shareVideo (Source source, boolean download) {
         if (source.getVideos().size() == 1) {
-            downloadOrStream(source.getVideos().get(0), download);
+            getPresenter().downloadOrStream(source.getVideos().get(0), download);
         } else {
             showVideosDialog(source.getVideos(), download);
-        }
-    }
-
-    public void downloadOrStream (Video video, boolean download) {
-        if (download) {
-            DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(video.getUrl()));
-            request.setTitle(video.getTitle());
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            downloadManager.enqueue(request);
-            // NEED TO USE BROADCAST RECEIVERS TO HANDLE CLICKS ON THE NOTIFICATION
-        } else {
-            postIntent(video.getUrl());
-        }
-    }
-
-    private void postIntent (String videoUrl) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse(videoUrl), "video/*");
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivity(intent);
         }
     }
 

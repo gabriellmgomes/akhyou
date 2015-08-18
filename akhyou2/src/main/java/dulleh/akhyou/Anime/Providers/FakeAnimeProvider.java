@@ -8,19 +8,16 @@ import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.Models.Source;
 import rx.exceptions.OnErrorThrowable;
 
-public class FakeAnimeProvider implements AnimeProvider {
+public class FakeAnimeProvider {
 
-    @Override
     public Anime fetchAnime(String url) {
         return fakeAnime();
     }
 
-    @Override
     public List<Source> fetchSources(String url) throws OnErrorThrowable {
         return null;
     }
 
-    @Override
     public Source fetchVideo(Source url) throws OnErrorThrowable {
         return null;
     }

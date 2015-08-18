@@ -3,8 +3,8 @@ package dulleh.akhyou;
 import android.content.SharedPreferences;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import dulleh.akhyou.Models.Anime;
@@ -14,6 +14,10 @@ import dulleh.akhyou.Utils.GeneralUtils;
 
 public class MainModel {
     private SharedPreferences sharedPreferences;
+
+    public void setSharedPreferences(SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
+    }
 
     public MainModel (SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
@@ -26,29 +30,41 @@ public class MainModel {
     */
     private static final String FAVOURITES_PREF = "favourites_preference";
 
-    private Map<String, Anime> favouritesMap;
-    public ArrayList<Anime> favouritesList;
+    // The key is the anime url.
+    private HashMap<String, Anime> favouritesMap;
+    //public ArrayList<Anime> favouritesList;
 
-    public void setSharedPreferences(SharedPreferences sharedPreferences) {
-        this.sharedPreferences = sharedPreferences;
+    public void setFavourites (ArrayList<Anime> favourites) {
+        for (Anime favourite : favourites) {
+            favouritesMap.put(favourite.getUrl(), favourite);
+        }
+    }
+
+    public ArrayList<Anime> getFavourites () {
+        if (favouritesMap != null) {
+            ArrayList<Anime> favourites = new ArrayList<Anime>();
+            favourites.addAll(favouritesMap.values());
+            return favourites;
+        }
+        return null;
     }
 
     public void refreshFavouritesList () {
         Set<String> favourites = new HashSet<>(sharedPreferences.getStringSet(FAVOURITES_PREF, new HashSet<>()));
 
-        favouritesList = new ArrayList<>(favourites.size());
+        favouritesMap = new HashMap<>(favourites.size());
         for (String favourite : favourites) {
-            Anime anime = GeneralUtils.deserializeFavourite(favourite);
+            Anime anime = GeneralUtils.deserializeAnime(favourite);
             if (anime != null) {
-                favouritesList.add(anime);
+                favouritesMap.put(anime.getUrl(), anime);
             }
         }
     }
 
     public void saveFavourites () {
-        Set<String> favourites = new HashSet<>(favouritesList.size());
-        for (Anime anime : favouritesList) {
-            favourites.add(GeneralUtils.serializeFavourite(anime));
+        Set<String> favourites = new HashSet<>(favouritesMap.size());
+        for (Anime anime : favouritesMap.values()) {
+            favourites.add(GeneralUtils.serializeAnime(anime));
         }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putStringSet(FAVOURITES_PREF, favourites);
@@ -56,12 +72,8 @@ public class MainModel {
     }
 
     public boolean isInFavourites (String url)  throws Exception{
-        if (favouritesList != null) {
-            for (Anime favourite : favouritesList) {
-                if (favourite != null && favourite.getUrl().equals(url)) {
-                    return true;
-                }
-            }
+        if (favouritesMap != null) {
+            if (favouritesMap.containsKey(url)) return true;
         } else {
             throw new Exception("Failed to parse favourites.");
         }
@@ -74,14 +86,11 @@ public class MainModel {
             event = new FavouriteEvent(isInFavourites(event.anime.getUrl()), event.addToFavourites, event.anime);
         }
 
-        if (!event.isInFavourites && event.addToFavourites) {
-            favouritesList.add(event.anime);
-        } else if (event.isInFavourites) {
-            for (Anime favourite : favouritesList) {
-                if (favourite.getUrl().equals(event.anime.getUrl())) {
-                    favouritesList.remove(favourite);
-                    break;
-                }
+        if (favouritesMap != null) {
+            if (!event.isInFavourites && event.addToFavourites) {
+                favouritesMap.put(event.anime.getUrl(), event.anime);
+            } else if (event.isInFavourites) {
+                favouritesMap.remove(event.anime.getUrl());
             }
         }
 
@@ -89,7 +98,9 @@ public class MainModel {
 
     // Anime must be in favouritesList for this
     public void updateFavourite (Anime favourite) {
-
+        if (favouritesMap.keySet().contains(favourite.getUrl())) {
+            favouritesMap.put(favourite.getUrl(), favourite);
+        }
     }
 
 
@@ -98,7 +109,8 @@ public class MainModel {
     * LAST ANIME
     *
     */
-    private static final String LAST_ANIME_TITLE_PREF = "last_anime_title_preference";
+    private static final String LAST_ANIME_PREF = "last_anime_preference";
+    /*private static final String LAST_ANIME_TITLE_PREF = "last_anime_title_preference";
     private static final String LAST_ANIME_URL_PREF = "last_anime_url_preference";
 
     public String getLastAnimeTitle () {
@@ -107,13 +119,23 @@ public class MainModel {
 
     public String getLastAnimeUrl () {
         return sharedPreferences.getString(LAST_ANIME_URL_PREF, null);
+    }*/
+
+    public Anime getLastAnime () {
+        // need to check for null or else deserialize will throw null pointer exception
+        String serializedAnime = sharedPreferences.getString(LAST_ANIME_PREF, null);
+        if (serializedAnime != null) {
+            return GeneralUtils.deserializeAnime(serializedAnime);
+        }
+        return null;
     }
 
     public void saveNewLastAnime (LastAnimeEvent event) {
         if (sharedPreferences != null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(LAST_ANIME_TITLE_PREF, event.anime.getTitle());
-            editor.putString(LAST_ANIME_URL_PREF, event.anime.getUrl());
+            editor.putString(LAST_ANIME_PREF, GeneralUtils.serializeAnime(event.anime));
+            //editor.putString(LAST_ANIME_TITLE_PREF, event.anime.getTitle());
+            //editor.putString(LAST_ANIME_URL_PREF, event.anime.getUrl());
             editor.apply();
         }
     }

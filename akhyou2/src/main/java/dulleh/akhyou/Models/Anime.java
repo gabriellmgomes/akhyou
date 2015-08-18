@@ -3,6 +3,7 @@ package dulleh.akhyou.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Anime implements Parcelable{
@@ -164,6 +165,23 @@ public class Anime implements Parcelable{
     public Anime setMajorColour(int majorColour) {
         this.majorColour = majorColour;
         return this;
+    }
+
+    public void inheritWatchedFrom (List<Episode> oldEpisodes) {
+        if (episodes != null) {
+            List<String> episodeTitles = new LinkedList<>();
+
+            for (Episode oldEpisode : oldEpisodes) {
+                episodeTitles.add(oldEpisode.getTitle());
+            }
+
+            for (int i = 0; i < episodes.size(); i++) {
+                Episode episode = episodes.get(i);
+                if (episodeTitles.contains(episode.getTitle())) {
+                    episodes.set(i, episode.setWatched(oldEpisodes.get(episodeTitles.indexOf(episode.getTitle())).isWatched()));
+                }
+            }
+        }
     }
 
 }

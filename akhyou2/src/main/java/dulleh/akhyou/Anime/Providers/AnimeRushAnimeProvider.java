@@ -5,9 +5,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Episode;
@@ -19,11 +17,11 @@ import dulleh.akhyou.Models.SourceProviders.Mp4UploadSourceProvider;
 import dulleh.akhyou.Models.SourceProviders.SourceProvider;
 import dulleh.akhyou.Models.SourceProviders.VkSourceProvider;
 import dulleh.akhyou.Models.SourceProviders.YourUploadSourceProvider;
-import dulleh.akhyou.Models.Video;
 import dulleh.akhyou.Utils.GeneralUtils;
 import rx.exceptions.OnErrorThrowable;
 
 public class AnimeRushAnimeProvider implements AnimeProvider {
+    private Element animeBox;
 
     private static final String[] sourceList = {
             "mp4upload",
@@ -38,7 +36,7 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
     public Anime fetchAnime(String url) {
         String body = GeneralUtils.getWebPage(url);
 
-        Element animeBox = isolate(body);
+        animeBox = isolate(body);
 
         if (!hasAnime(animeBox)) {
             throw OnErrorThrowable.from(new Throwable("Failed to retrieve anime."));
@@ -47,16 +45,25 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
         Anime anime = new Anime().setUrl(url);
 
         animeBox = animeBox.select("div.amin_box2").first();
-        anime.setTitle(parseForTitle(animeBox));
+        anime.setTitle(parseForTitle());
 
         animeBox = animeBox.select("div.desc_box_mid").first();
-        anime.setImageUrl(parseForImageUrl(animeBox));
+        anime.setImageUrl(parseForImageUrl());
 
-        anime = parseForInformation(anime, animeBox);
+        anime = parseForInformation(anime);
 
-        anime = parseForEpisodes(anime, animeBox);
+        anime.setEpisodes(parseForEpisodes());
 
         return anime;
+    }
+
+    @Override
+    public Anime updateCachedAnime(Anime cachedAnime) throws OnErrorThrowable {
+        Anime updatedAnime = fetchAnime(cachedAnime.getUrl());
+
+        updatedAnime.inheritWatchedFrom(cachedAnime.getEpisodes());
+
+        return updatedAnime;
     }
 
     @Override
@@ -108,16 +115,16 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
         return element.select("div.errormessage").isEmpty();
     }
 
-    private String parseForTitle (Element element) {
-        return element.select("h1").text();
+    private String parseForTitle () {
+        return animeBox.select("h1").text();
     }
 
-    private String parseForImageUrl (Element element) {
-        return element.select("div.cat_image > object").first().attr("data");
+    private String parseForImageUrl () {
+        return animeBox.select("div.cat_image > object").first().attr("data");
     }
 
-    private Anime parseForInformation(Anime anime, Element element) {
-        element = element.select("div.cat_box_desc").first();
+    private Anime parseForInformation(Anime anime) {
+        Element element = animeBox.select("div.cat_box_desc").first();
         String catBoxDesc = element.getAllElements().text();
 
         String[] currentSplit = catBoxDesc.split("Status: ")[1].split("Alternative Titles: ");
@@ -139,8 +146,8 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
         return anime;
     }
 
-    private Anime parseForEpisodes(Anime anime, Element element) {
-        Elements episodeElements = element.select("div.episode_list");
+    private List<Episode> parseForEpisodes() {
+        Elements episodeElements = animeBox.select("div.episode_list");
         List<Episode> episodes = new ArrayList<>(episodeElements.size());
 
         for (Element e : episodeElements) {
@@ -150,7 +157,7 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
             episodes.add(episode);
         }
 
-        return anime.setEpisodes(episodes);
+        return episodes;
     }
 
     private List<Source> parseForSources (Element element) {

@@ -10,6 +10,8 @@ public interface AnimeProvider {
 
     Anime fetchAnime(String url) throws OnErrorThrowable;
 
+    Anime updateCachedAnime (Anime cachedAnime) throws OnErrorThrowable;
+
     List<Source> fetchSources (String url) throws OnErrorThrowable;
 
     Source fetchVideo (Source url) throws OnErrorThrowable;
