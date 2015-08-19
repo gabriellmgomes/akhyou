@@ -14,32 +14,17 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import dulleh.akhyou.Models.Anime;
+import dulleh.akhyou.Models.SearchProviders.AnimeRushSearchProvider;
+import dulleh.akhyou.Models.SearchProviders.SearchProvider;
 import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.AdapterClickListener;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
-    private List<Anime> animes;
     private Context context;
     private AdapterClickListener<Anime> adapterClickListener;
 
-    public SearchAdapter (List<Anime> animes, AdapterClickListener<Anime> adapterClickListener) {
-        this.animes = animes;
+    public SearchAdapter (AdapterClickListener<Anime> adapterClickListener) {
         this.adapterClickListener = adapterClickListener;
-    }
-
-    public void setAnimes (List<Anime> animes) {
-        this.clear();
-        this.animes = animes;
-        this.notifyDataSetChanged();
-    }
-
-    public void addAnime (Anime anime) {
-        animes.add(anime);
-        this.notifyItemInserted(animes.size());
-    }
-
-    public List<Anime> getAnimes () {
-        return this.animes;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -67,12 +52,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
-
-        viewHolder.titleView.setText(animes.get(position).getTitle());
-        viewHolder.descView.setText(animes.get(position).getDesc());
+        Anime anime = SearchPresenter.searchResultsCache.get(position);
+        viewHolder.titleView.setText(anime.getTitle());
+        viewHolder.descView.setText(anime.getDesc());
 
         Picasso.with(context)
-                .load(animes.get(position).getImageUrl())
+                .load(anime.getImageUrl())
                 .error(R.drawable.placeholder)
                 .fit()
                 .centerCrop()
@@ -82,7 +67,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         viewHolder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                adapterClickListener.onCLick(animes.get(viewHolder.getAdapterPosition()), null);
+                adapterClickListener.onCLick(SearchPresenter.searchResultsCache.get(position), null);
             }
         });
 
@@ -90,11 +75,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return animes.size();
-    }
-
-    public void clear () {
-        this.animes.clear();
-        this.notifyDataSetChanged();
+        return SearchPresenter.searchResultsCache.size();
     }
 }

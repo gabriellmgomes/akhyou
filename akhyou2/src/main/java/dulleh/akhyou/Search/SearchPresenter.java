@@ -7,8 +7,8 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
-import dulleh.akhyou.Search.Providers.AnimeRushSearchProvider;
-import dulleh.akhyou.Search.Providers.SearchProvider;
+import dulleh.akhyou.Models.SearchProviders.AnimeRushSearchProvider;
+import dulleh.akhyou.Models.SearchProviders.SearchProvider;
 import dulleh.akhyou.Utils.Events.SearchEvent;
 import dulleh.akhyou.Utils.Events.SnackbarEvent;
 import dulleh.akhyou.Utils.GeneralUtils;
@@ -21,11 +21,15 @@ import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
 public class SearchPresenter extends RxPresenter<SearchFragment> {
+    public static int ANIMERUSH_SEARCH_PROVIDER = 0;
+
+    public static List<Anime> searchResultsCache = new ArrayList<>(0);
+
     private Subscription subscription;
     private SearchProvider searchProvider;
 
     private String searchTerm;
-    private boolean isRefreshing;
+    public boolean isRefreshing;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -44,9 +48,7 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     @Override
     protected void onTakeView(SearchFragment view) {
         super.onTakeView(view);
-        if (isRefreshing) {
-            view.setRefreshing(true);
-        }
+        view.updateRefreshing();
 
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().registerSticky(this);
@@ -54,14 +56,9 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     }
 
     @Override
-    protected void onDropView() {
-        super.onDropView();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         searchProvider = null;
         unsubscribe();
     }
@@ -78,15 +75,13 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     }
 
     public void search () {
-        if (getView() != null && !getView().isRefreshing()) {
-            getView().setRefreshing(true);
-        }
         isRefreshing = true;
+        if (getView() != null) {
+            getView().updateRefreshing();
+        }
 
-        if (subscription != null) {
-            if (!subscription.isUnsubscribed()) {
-                unsubscribe();
-            }
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
         }
 
         subscription = Observable.defer(new Func0<Observable<List<Anime>>>() {
@@ -101,25 +96,25 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
                 .subscribe(new Subscriber<List<Anime>>() {
                     @Override
                     public void onNext(List<Anime> animes) {
+                        searchResultsCache = animes;
                         isRefreshing = false;
-                        if (getView() != null) {
-                            getView().setSearchResults(animes);
-                        }
+                        getView().updateSearchResults();
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onCompleted() {
-                        unsubscribe();
+                        // should be using Observable.just() as onCompleted is never called
+                        // and it only runs once.
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        if (getView() != null) {
-                            getView().setSearchResults(new ArrayList<>(0));
-                        }
+                        isRefreshing = false;
+                        searchResultsCache.clear();
+                        getView().updateSearchResults();
                         postError(e);
-                        unsubscribe();
-                        e.printStackTrace();
+                        this.unsubscribe();
                     }
                 });
     }

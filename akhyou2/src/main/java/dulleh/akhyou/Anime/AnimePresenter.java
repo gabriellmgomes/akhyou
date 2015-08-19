@@ -121,10 +121,8 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
             getView().updateRefreshing();
         }
 
-        if (animeSubscription != null) {
-            if (!animeSubscription.isUnsubscribed()) {
-                animeSubscription.unsubscribe();
-            }
+        if (animeSubscription != null && !animeSubscription.isUnsubscribed()) {
+            animeSubscription.unsubscribe();
         }
 
         animeSubscription = Observable.defer(new Func0<Observable<Anime>>() {
@@ -143,17 +141,16 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     @Override
                     public void onNext(Anime anime) {
                         lastAnime = anime;
-                        if (getView() != null) {
-                            getView().setAnime(lastAnime, isInFavourites());
-                        }
+                        isRefreshing = false;
+                        getView().setAnime(lastAnime, isInFavourites());
                         EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onCompleted() {
-                        isRefreshing = false;
-                        animeSubscription.unsubscribe();
-                        this.unsubscribe();
+                        // should be using Observable.just() as onCompleted is never called
+                        // and it only runs once.
                     }
 
                     @Override
@@ -251,14 +248,14 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                 .subscribe(new Subscriber<List<Source>>() {
                     @Override
                     public void onNext(List<Source> sources) {
-                        if (getView() != null) {
-                            getView().showSourcesDialog(sources);
-                        }
+                        getView().showSourcesDialog(sources);
+                        episodeSubscription.unsubscribe();
                     }
 
                     @Override
                     public void onCompleted() {
-                        episodeSubscription.unsubscribe();
+                        // should be using Observable.just() as onCompleted is never called
+                        // and it only runs once.
                     }
 
                     @Override
@@ -286,17 +283,18 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.deliver())
+                // this subscriber stays here because it needs the 'download'
                 .subscribe(new Subscriber<Source>() {
                     @Override
                     public void onNext(Source source) {
-                        if (getView() != null) {
-                            getView().shareVideo(source, download);
-                        }
+                        getView().shareVideo(source, download);
+                        this.unsubscribe();
                     }
 
                     @Override
                     public void onCompleted() {
-                        this.unsubscribe();
+                        // should be using Observable.just() as onCompleted is never called
+                        // and it only runs once.
                     }
 
                     @Override

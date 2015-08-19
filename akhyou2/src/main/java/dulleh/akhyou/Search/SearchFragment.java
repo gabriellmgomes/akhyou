@@ -37,7 +37,7 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        searchAdapter = new SearchAdapter(new ArrayList<>(0), this);
+        searchAdapter = new SearchAdapter(this);
         setHasOptionsMenu(true);
     }
 
@@ -61,6 +61,12 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
         });
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        SearchPresenter.searchResultsCache = null;
+        super.onDestroy();
     }
 
     @Override
@@ -100,18 +106,18 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
         refreshLayout.requestFocus();
     }
 
-    public void setSearchResults (List<Anime> animes) {
-        searchAdapter.setAnimes(animes);
-        setRefreshing(false);
+    public void updateSearchResults () {
+        searchAdapter.notifyDataSetChanged();
+        updateRefreshing();
     }
 
-    public void setRefreshing (boolean bool) {
-        if (bool) {
+    public void updateRefreshing () {
+        if (getPresenter().isRefreshing) {
             TypedValue typedValue = new TypedValue();
             getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typedValue, true);
             refreshLayout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typedValue.resourceId));
             refreshLayout.setRefreshing(true);
-        } else{
+        } else {
             refreshLayout.setRefreshing(false);
         }
     }
@@ -129,10 +135,6 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
     @Override
     public void onLongClick(Anime item, @Nullable Integer position) {
 
-    }
-
-    public void addToSearchResults (Anime anime) {
-        searchAdapter.addAnime(anime);
     }
 
 }

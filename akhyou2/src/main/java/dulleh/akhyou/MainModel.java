@@ -36,7 +36,7 @@ public class MainModel {
 
         favouritesMap = new HashMap<>(favourites.size());
         for (String favourite : favourites) {
-            Anime anime = GeneralUtils.deserializeAnime(favourite);
+            Anime anime = deserializeAnime(favourite);
             if (anime != null) {
                 favouritesMap.put(anime.getUrl(), anime);
             }
@@ -47,8 +47,14 @@ public class MainModel {
         // need to check for null or else deserialize will throw null pointer exception
         String serializedAnime = sharedPreferences.getString(LAST_ANIME_PREF, null);
         if (serializedAnime != null) {
-            lastAnime = GeneralUtils.deserializeAnime(serializedAnime);
+            lastAnime = deserializeAnime(serializedAnime);
         }
+    }
+
+    public boolean updateLastAnimeAndFavourite (Anime anime) {
+        saveNewLastAnime(anime);
+           // THIS METHOD IS BEING EXECUTED
+        return updateFavourite(anime);
     }
 
 
@@ -76,7 +82,7 @@ public class MainModel {
     public void saveFavourites () {
         Set<String> favourites = new HashSet<>(favouritesMap.size());
         for (Anime anime : favouritesMap.values()) {
-            favourites.add(GeneralUtils.serializeAnime(anime));
+            favourites.add(serializeAnime(anime));
         }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putStringSet(FAVOURITES_PREF, favourites);
@@ -123,6 +129,8 @@ public class MainModel {
     *               LAST ANIME
     *
     */
+
+
     public Anime getLastAnime () {
         return lastAnime;
     }
@@ -130,9 +138,25 @@ public class MainModel {
     public void saveNewLastAnime (Anime anime) {
         if (sharedPreferences != null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(LAST_ANIME_PREF, GeneralUtils.serializeAnime(anime));
+                editor.putString(LAST_ANIME_PREF, serializeAnime(anime));
             editor.apply();
         }
+    }
+
+
+    /*
+    *
+    *               UTILS
+    *
+    */
+
+
+    private String serializeAnime (Anime anime) {
+        return GeneralUtils.serializeAnime(anime);
+    }
+
+    private Anime deserializeAnime (String serializedAnime) {
+        return GeneralUtils.deserializeAnime(serializedAnime);
     }
 
 }

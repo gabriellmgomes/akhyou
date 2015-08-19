@@ -52,9 +52,6 @@ public class MainPresenter extends RxPresenter<MainActivity>{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().registerSticky(this);
-        }
         mainModel = null;
     }
 
@@ -137,11 +134,9 @@ public class MainPresenter extends RxPresenter<MainActivity>{
     }
 
     public void onEvent (LastAnimeEvent event) {
-        mainModel.saveNewLastAnime(event.anime);
-        if (mainModel.updateFavourite(event.anime)) {
-            if (getView() != null) {
-                getView().favouritesChanged();
-            }
+            // THIS METHOD IS BEING EXECUTED
+        if (mainModel.updateLastAnimeAndFavourite(event.anime) && getView() != null) {
+            getView().favouritesChanged();
         }
     }
 

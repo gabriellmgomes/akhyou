@@ -1,7 +1,8 @@
-package dulleh.akhyou.Search.Providers;
+package dulleh.akhyou.Models.SearchProviders;
 
 import org.jsoup.nodes.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dulleh.akhyou.Models.Anime;

@@ -1,4 +1,4 @@
-package dulleh.akhyou.Search.Providers;
+package dulleh.akhyou.Models.SearchProviders;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
