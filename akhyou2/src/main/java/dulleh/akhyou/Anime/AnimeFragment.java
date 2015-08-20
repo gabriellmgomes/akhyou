@@ -31,6 +31,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.MainActivity;
+import dulleh.akhyou.MainApplication;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Episode;
 import dulleh.akhyou.Models.Source;
@@ -155,6 +156,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     public void onDestroy() {
         super.onDestroy();
         setToolbarTitle(null);
+        MainApplication.getRefWatcher(getActivity()).watch(this);
     }
 
     @Override
@@ -194,27 +196,35 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
 
     }
 
-    public void setAnime (Anime anime, boolean isInFavourites) {
+    public void setAnime (Anime anime, boolean isInFavourites, boolean hasMajorColour) {
         episodesAdapter.setAnime(anime.getEpisodes());
         setToolbarTitle(anime.getTitle());
 
-        final PaletteTransform paletteTransform = new PaletteTransform();
         Picasso.with(getActivity()).invalidate(anime.getUrl());
-
-        Picasso.with(getActivity())
+        if (!hasMajorColour) {
+            final PaletteTransform paletteTransform = new PaletteTransform();
+            Picasso.with(getActivity())
+                    .load(anime.getImageUrl())
+                    .error(R.drawable.placeholder)
+                            //.transform(blurTransform)
+                            //.transform(blurTransform)
+                    .fit()
+                    .centerCrop()
+                    .transform(paletteTransform)
+                    .into(drawerImage, new Callback.EmptyCallback() {
+                        @Override
+                        public void onSuccess() {
+                            getPresenter().setMajorColour(paletteTransform.getPallete());
+                        }
+                    });
+        } else {
+            Picasso.with(getActivity())
                 .load(anime.getImageUrl())
                 .error(R.drawable.placeholder)
-                //.transform(blurTransform)
-                        //.transform(blurTransform)
                 .fit()
                 .centerCrop()
-                .transform(paletteTransform)
-                .into(drawerImage, new Callback.EmptyCallback() {
-                    @Override
-                    public void onSuccess() {
-                        getPresenter().setMajorColour(paletteTransform.getPallete());
-                    }
-                });
+                .into(drawerImage);
+        }
 
         drawerDesc.setText(anime.getDesc());
         drawerGenres.setText(anime.getGenresString());
@@ -246,12 +256,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     }
 
     public void setToolbarTitle (String title) {
-        try {
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle(title); //MAY PRODUCE NULL POINTER EXCEPTION
-        } catch (Exception e) {
-            EventBus.getDefault().post(new SnackbarEvent("An error occurred."));
-            e.printStackTrace();
-        }
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle(title);
     }
 
     public void setFavouriteChecked(boolean isInFavourites) {

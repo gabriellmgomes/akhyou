@@ -10,6 +10,7 @@ import android.support.v7.graphics.Palette;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import dulleh.akhyou.MainApplication;
 import dulleh.akhyou.Models.AnimeProviders.AnimeRushAnimeProvider;
 import dulleh.akhyou.Models.AnimeProviders.AnimeProvider;
 import dulleh.akhyou.MainActivity;
@@ -68,7 +69,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         view.updateRefreshing();
         if (lastAnime != null) {
             if (lastAnime.getEpisodes() != null) {
-                view.setAnime(lastAnime, isInFavourites());
+                view.setAnime(lastAnime, isInFavourites(), GeneralUtils.isAccentColour(lastAnime.getMajorColour()));
             } else if (lastAnime.getTitle() != null) {
                 view.setToolbarTitle(lastAnime.getTitle());
             }
@@ -108,7 +109,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     public void onEvent (OpenAnimeEvent event) {
         lastAnime = event.anime;
         if (lastAnime != null && lastAnime.getEpisodes() != null) {
-            getView().setAnime(lastAnime, isInFavourites());
+            getView().setAnime(lastAnime, isInFavourites(),  GeneralUtils.isAccentColour(lastAnime.getMajorColour()));
             fetchAnime(true);
         } else {
             fetchAnime(false);
@@ -142,7 +143,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     public void onNext(Anime anime) {
                         lastAnime = anime;
                         isRefreshing = false;
-                        getView().setAnime(lastAnime, isInFavourites());
+                        getView().setAnime(lastAnime, isInFavourites(), GeneralUtils.isAccentColour(lastAnime.getMajorColour()));
                         EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
                         this.unsubscribe();
                     }
@@ -194,8 +195,6 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
             } else if (palette.getDarkMutedSwatch() != null) {
                 lastAnime.setMajorColour(palette.getDarkMutedSwatch().getRgb());
             }
-        } else {
-            lastAnime.setMajorColour(getView().getResources().getColor(R.color.accent));
         }
     }
 

@@ -63,6 +63,8 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
 
         updatedAnime.inheritWatchedFrom(cachedAnime.getEpisodes());
 
+        updatedAnime.setMajorColour(cachedAnime.getMajorColour());
+
         return updatedAnime;
     }
 

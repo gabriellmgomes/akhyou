@@ -142,11 +142,13 @@ public class MainPresenter extends RxPresenter<MainActivity>{
 
 
     public void onEvent (SearchSubmittedEvent event) {
-        if (getView().getSupportFragmentManager().findFragmentByTag(MainActivity.ANIME_FRAGMENT) != null) {
-            getView().getSupportFragmentManager().popBackStack();
-        }
-        if (getView().getSupportFragmentManager().findFragmentByTag(MainActivity.SEARCH_FRAGMENT) == null) {
-            getView().requestFragment(MainActivity.SEARCH_FRAGMENT);
+        if (getView() != null) {
+            if (getView().getSupportFragmentManager().findFragmentByTag(MainActivity.ANIME_FRAGMENT) != null) {
+                getView().getSupportFragmentManager().popBackStack();
+            }
+            if (getView().getSupportFragmentManager().findFragmentByTag(MainActivity.SEARCH_FRAGMENT) == null) {
+                getView().requestFragment(MainActivity.SEARCH_FRAGMENT);
+            }
         }
         EventBus.getDefault().postSticky(new SearchEvent(event.searchTerm));
     }

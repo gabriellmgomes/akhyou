@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import java.util.LinkedList;
 import java.util.List;
 
+import dulleh.akhyou.MainApplication;
+
 public class Anime implements Parcelable{
 
     // has to be here cos conflicts with V
@@ -66,7 +68,8 @@ public class Anime implements Parcelable{
     private String[] genres;
     private String genresString;
     private List<Episode> episodes;
-    private int majorColour;
+    // default to accent color
+    private int majorColour = MainApplication.RED_ACCENT_RGB;
 
     public String getTitle() {
         return title;

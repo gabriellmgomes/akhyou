@@ -76,7 +76,7 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
         //toolbar.setContentInsetsRelative(0, 0);
         toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeButtonEnabled(true); //MAY PRODUCE NULL POINTER EXCEPTION
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // must be after set as actionbar
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -99,6 +99,12 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
             getPresenter().onFreshStart(this);
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MainApplication.getRefWatcher(this).watch(this);
     }
 
     public void closeDrawer () {

@@ -21,6 +21,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.MainActivity;
+import dulleh.akhyou.MainApplication;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.AdapterClickListener;
@@ -65,8 +66,9 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
 
     @Override
     public void onDestroy() {
-        SearchPresenter.searchResultsCache = null;
         super.onDestroy();
+        SearchPresenter.searchResultsCache = null;
+        MainApplication.getRefWatcher(getActivity()).watch(this);
     }
 
     @Override

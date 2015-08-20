@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import dulleh.akhyou.MainApplication;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.BasicObservableable;
 import dulleh.akhyou.Models.HummingbirdApi;
@@ -112,6 +113,10 @@ public class GeneralUtils {
             io.printStackTrace();
             return null;
         }
+    }
+
+    public static boolean isAccentColour (int colorInt) {
+        return colorInt == MainApplication.RED_ACCENT_RGB;
     }
 
 /*
