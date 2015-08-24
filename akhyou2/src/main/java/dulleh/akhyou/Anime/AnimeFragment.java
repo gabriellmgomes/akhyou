@@ -39,7 +39,6 @@ import dulleh.akhyou.Models.Video;
 import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.AdapterClickListener;
 import dulleh.akhyou.Utils.Events.SearchSubmittedEvent;
-import dulleh.akhyou.Utils.Events.SnackbarEvent;
 import dulleh.akhyou.Utils.PaletteTransform;
 import nucleus.factory.RequiresPresenter;
 import nucleus.view.NucleusSupportFragment;
