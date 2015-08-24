@@ -1,4 +1,4 @@
-package dulleh.akhyou.Search;
+package dulleh.akhyou.Search.Holder.Item;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -11,12 +11,9 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-
 import dulleh.akhyou.Models.Anime;
-import dulleh.akhyou.Models.SearchProviders.AnimeRushSearchProvider;
-import dulleh.akhyou.Models.SearchProviders.SearchProvider;
 import dulleh.akhyou.R;
+import dulleh.akhyou.Search.Holder.SearchHolderFragment;
 import dulleh.akhyou.Utils.AdapterClickListener;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
@@ -52,7 +49,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
-        Anime anime = SearchPresenter.searchResultsCache.get(position);
+        Anime anime = SearchHolderFragment.searchResultsCache.get(position);
         viewHolder.titleView.setText(anime.getTitle());
         viewHolder.descView.setText(anime.getDesc());
 
@@ -67,7 +64,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         viewHolder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                adapterClickListener.onCLick(SearchPresenter.searchResultsCache.get(position), null);
+                adapterClickListener.onCLick(SearchHolderFragment.searchResultsCache.get(position), null);
             }
         });
 
@@ -75,6 +72,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return SearchPresenter.searchResultsCache.size();
+        return SearchHolderFragment.searchResultsCache.size();
     }
 }

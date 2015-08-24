@@ -1,14 +1,14 @@
-package dulleh.akhyou.Search;
+package dulleh.akhyou.Search.Holder.Item;
 
 import android.os.Bundle;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.SearchProviders.AnimeRushSearchProvider;
 import dulleh.akhyou.Models.SearchProviders.SearchProvider;
+import dulleh.akhyou.Search.Holder.SearchHolderFragment;
 import dulleh.akhyou.Utils.Events.SearchEvent;
 import dulleh.akhyou.Utils.Events.SnackbarEvent;
 import dulleh.akhyou.Utils.GeneralUtils;
@@ -21,9 +21,6 @@ import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
 public class SearchPresenter extends RxPresenter<SearchFragment> {
-    public static int ANIMERUSH_SEARCH_PROVIDER = 0;
-
-    public static List<Anime> searchResultsCache = new ArrayList<>(0);
 
     private Subscription subscription;
     private SearchProvider searchProvider;
@@ -39,34 +36,33 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
             searchProvider = new AnimeRushSearchProvider();
         }
 
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().registerSticky(this);
-        }
-
+        subscribe();
     }
 
     @Override
     protected void onTakeView(SearchFragment view) {
         super.onTakeView(view);
         view.updateRefreshing();
-
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().registerSticky(this);
-        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
         searchProvider = null;
         unsubscribe();
+    }
+
+    private void subscribe () {
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().registerSticky(this);
+        }
     }
 
     private void unsubscribe () {
         if (subscription != null && !subscription.isUnsubscribed()) {
             subscription.unsubscribe();
         }
+        EventBus.getDefault().unregister(this);
     }
 
     public void onEvent (SearchEvent event) {
@@ -96,7 +92,7 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
                 .subscribe(new Subscriber<List<Anime>>() {
                     @Override
                     public void onNext(List<Anime> animes) {
-                        searchResultsCache = animes;
+                        SearchHolderFragment.searchResultsCache = animes;
                         isRefreshing = false;
                         getView().updateSearchResults();
                         this.unsubscribe();
@@ -111,7 +107,7 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
                     @Override
                     public void onError(Throwable e) {
                         isRefreshing = false;
-                        searchResultsCache.clear();
+                        SearchHolderFragment.searchResultsCache.clear();
                         getView().updateSearchResults();
                         postError(e);
                         this.unsubscribe();

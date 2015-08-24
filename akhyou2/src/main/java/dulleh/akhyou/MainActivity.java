@@ -13,12 +13,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Anime.AnimeFragment;
 import dulleh.akhyou.Models.Anime;
-import dulleh.akhyou.Search.SearchFragment;
+import dulleh.akhyou.Search.Holder.SearchHolderFragment;
 import dulleh.akhyou.Settings.SettingsFragment;
 import dulleh.akhyou.Utils.AdapterClickListener;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
@@ -31,7 +32,7 @@ import nucleus.view.NucleusAppCompatActivity;
 public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implements AdapterClickListener<Anime>{
     private SharedPreferences sharedPreferences;
     private android.support.v4.app.FragmentManager fragmentManager;
-    private RelativeLayout parentLayout;
+    private FrameLayout parentLayout;
     private DrawerLayout drawerLayout;
     private RecyclerView favouritesList;
     private DrawerAdapter drawerAdapter;
@@ -51,11 +52,7 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
 
         getPresenter().setSharedPreferences(sharedPreferences);
 
-        parentLayout = (RelativeLayout) findViewById(R.id.container);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            RelativeLayout topLayoutRelative = (RelativeLayout) findViewById(R.id.top_level_relative);
-            getLayoutInflater().inflate(R.layout.toolbar_shadow, topLayoutRelative, true);
-        }
+        parentLayout = (FrameLayout) findViewById(R.id.container);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -194,7 +191,7 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
             case SEARCH_FRAGMENT:
                 fragmentTransaction
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .replace(R.id.container, new SearchFragment(), SEARCH_FRAGMENT);
+                        .replace(R.id.container, new SearchHolderFragment(), SEARCH_FRAGMENT);
                 break;
 
             case ANIME_FRAGMENT:
@@ -211,15 +208,13 @@ public class MainActivity extends NucleusAppCompatActivity<MainPresenter> implem
             case SETTINGS_FRAGMENT:
                 fragmentTransaction
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(R.id.container, new SettingsFragment(), SETTINGS_FRAGMENT);
+                        .replace(R.id.container, new SettingsFragment(), SETTINGS_FRAGMENT);
 
                 if (fragmentManager.findFragmentByTag(ANIME_FRAGMENT) != null) {
                     fragmentTransaction
-                            .addToBackStack(ANIME_FRAGMENT)
-                            .hide(fragmentManager.findFragmentByTag(ANIME_FRAGMENT));
-                } else {
+                            .addToBackStack(ANIME_FRAGMENT);
+                } else { // only other situation settings could have been opened in
                     fragmentTransaction
-                            .hide(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT))
                             .addToBackStack(SEARCH_FRAGMENT);
                 }
 

@@ -19,7 +19,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp" >
 
             <View
                 android:id="@+id/info_shadow"
@@ -31,12 +32,11 @@
                 android:id="@+id/drawer_genres_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="marquee"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
                 android:layout_below="@id/info_shadow"
                 android:gravity="center"
-                android:textColor="@color/grey_darkest"
+                android:textColor="?attr/colorPrimaryDark"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:background="@android:color/white" />
@@ -48,9 +48,90 @@
                 android:layout_below="@id/drawer_genres_view"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:paddingBottom="16dp"
+                android:paddingBottom="4dp"
                 android:textColor="@android:color/black"
                 android:background="@android:color/white" />
+
+            <TextView
+                android:id="@+id/drawer_alternate_title_title_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/drawer_desc_view"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:paddingTop="2sp"
+                android:paddingLeft="16dp"
+                android:paddingRight="8dp"
+                android:textSize="14sp"
+                android:textColor="@color/grey_darkest"
+                android:textStyle="bold"
+                android:text="@string/alternate_title_title" />
+
+            <TextView
+                android:id="@+id/drawer_alternate_title_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/drawer_desc_view"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:paddingBottom="4dp"
+                android:paddingRight="16dp"
+                android:textSize="16sp"
+                android:textColor="?attr/colorPrimaryDark" />
+
+            <TextView
+                android:id="@+id/drawer_date_title_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/drawer_alternate_title_view"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:paddingTop="2sp"
+                android:paddingLeft="16dp"
+                android:paddingRight="8dp"
+                android:textSize="14sp"
+                android:textColor="@color/grey_darkest"
+                android:textStyle="bold"
+                android:text="@string/date_title" />
+
+            <TextView
+                android:id="@+id/drawer_date_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/drawer_alternate_title_view"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:paddingBottom="4dp"
+                android:paddingRight="16dp"
+                android:textSize="16sp"
+                android:textColor="?attr/colorPrimaryDark" />
+
+            <TextView
+                android:id="@+id/drawer_status_title_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/drawer_date_view"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:paddingTop="2sp"
+                android:paddingLeft="16dp"
+                android:paddingRight="8dp"
+                android:textSize="14sp"
+                android:textColor="@color/grey_darkest"
+                android:textStyle="bold"
+                android:text="@string/status_title" />
+
+            <TextView
+                android:id="@+id/drawer_status_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/drawer_date_view"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:paddingBottom="4dp"
+                android:paddingRight="16dp"
+                android:textSize="16sp"
+                android:textColor="?attr/colorPrimaryDark" />
 
         </RelativeLayout>
 

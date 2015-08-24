@@ -14,4 +14,6 @@
         android:layout_marginRight="8dp"
         android:layout_below="@id/theme_preference_item" />
 
+    <include layout="@layout/toolbar_shadow" />
+
 </RelativeLayout>

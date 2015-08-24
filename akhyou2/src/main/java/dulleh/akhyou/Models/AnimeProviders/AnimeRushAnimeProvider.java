@@ -125,7 +125,7 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
         return animeBox.select("div.cat_image > object").first().attr("data");
     }
 
-    private Anime parseForInformation(Anime anime) {
+    private Anime parseForInformation (Anime anime) {
         Element element = animeBox.select("div.cat_box_desc").first();
         String catBoxDesc = element.getAllElements().text();
 
@@ -148,7 +148,7 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
         return anime;
     }
 
-    private List<Episode> parseForEpisodes() {
+    private List<Episode> parseForEpisodes () {
         Elements episodeElements = animeBox.select("div.episode_list");
         List<Episode> episodes = new ArrayList<>(episodeElements.size());
 

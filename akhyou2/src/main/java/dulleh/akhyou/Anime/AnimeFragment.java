@@ -52,6 +52,9 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     private ImageView drawerImage;
     private TextView drawerDesc;
     private TextView drawerGenres;
+    private TextView drawerAlternateTitle;
+    private TextView drawerDate;
+    private TextView drawerStatus;
     private CheckBox drawerCheckBox;
     //private BlurTransform blurTransform;
     private Integer position;
@@ -115,6 +118,9 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         drawerImage = (ImageView) animeDrawer.findViewById(R.id.drawer_image_view);
         drawerDesc = (TextView) animeDrawer.findViewById(R.id.drawer_desc_view);
         drawerGenres = (TextView) animeDrawer.findViewById(R.id.drawer_genres_view);
+        drawerAlternateTitle = (TextView) animeDrawer.findViewById(R.id.drawer_alternate_title_view);
+        drawerDate = (TextView) animeDrawer.findViewById(R.id.drawer_date_view);
+        drawerStatus = (TextView) animeDrawer.findViewById(R.id.drawer_status_view);
 
         drawerCheckBox = (CheckBox) animeDrawer.findViewById(R.id.drawer_favourite_checkbox);
         drawerCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -226,8 +232,11 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                 .into(drawerImage);
         }
 
-        drawerDesc.setText(anime.getDesc());
         drawerGenres.setText(anime.getGenresString());
+        drawerDesc.setText(anime.getDesc());
+        drawerAlternateTitle.setText(anime.getAlternateTitle());
+        drawerDate.setText(anime.getDate());
+        drawerStatus.setText(anime.getStatus());
 
         // CHECK IF IN FAVOURITES
         drawerCheckBox.setChecked(isInFavourites);

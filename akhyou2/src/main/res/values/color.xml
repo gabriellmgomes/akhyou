@@ -5,6 +5,8 @@
     <color name="primary_dark">#616161</color>
     <color name="accent">#ffd8383d</color>
 
+    <color name="white_transparent">#64ffffff</color>
+
     <color name="grey_lighter">#f2f2f2</color>
     <color name="grey_light">#ffe2e2e2</color>
     <color name="grey">#ffcccccc</color>

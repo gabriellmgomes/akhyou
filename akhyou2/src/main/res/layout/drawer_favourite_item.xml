@@ -28,7 +28,6 @@
         android:src="@drawable/ic_favorite_white_24dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:alpha="0.87" />
+        android:layout_marginStart="16dp" />
 
 </RelativeLayout>

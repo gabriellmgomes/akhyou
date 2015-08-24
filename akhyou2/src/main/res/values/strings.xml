@@ -46,5 +46,10 @@
     <string name="testGenre1">Mystery</string>
     <string name="testGenre2">School</string>
 
+    <string name="anime_rush">AnimeRush</string>
+
+    <string name="status_title">Status:</string>
+    <string name="alternate_title_title">Alternate Title:</string>
+    <string name="date_title">Release Date:</string>
 
 </resources>

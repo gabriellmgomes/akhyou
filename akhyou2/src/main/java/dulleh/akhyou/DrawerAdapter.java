@@ -1,5 +1,6 @@
 package dulleh.akhyou;
 
+import android.graphics.PorterDuff;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +48,9 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemViewHolder) {
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+/*
             itemViewHolder.iconView.setColorFilter(getItem(position).getMajorColour());
+*/
             itemViewHolder.titleView.setText(getItem(position).getTitle());
             itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

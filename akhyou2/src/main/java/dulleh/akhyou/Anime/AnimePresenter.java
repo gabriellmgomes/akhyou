@@ -17,7 +17,6 @@ import dulleh.akhyou.MainActivity;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Models.Source;
 import dulleh.akhyou.Models.Video;
-import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.Events.FavouriteEvent;
 import dulleh.akhyou.Utils.Events.LastAnimeEvent;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
@@ -180,10 +179,6 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
     public void setNeedToGiveFavourite (boolean bool) {
         needToGiveFavouriteState = bool;
-    }
-
-    public void setMajorColour (int colour) {
-        lastAnime.setMajorColour(colour);
     }
 
     public void setMajorColour (Palette palette) {

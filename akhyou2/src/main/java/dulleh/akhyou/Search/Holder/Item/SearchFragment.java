@@ -1,4 +1,4 @@
-package dulleh.akhyou.Search;
+package dulleh.akhyou.Search.Holder.Item;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,14 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.MainActivity;
 import dulleh.akhyou.MainApplication;
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.R;
+import dulleh.akhyou.Search.Holder.SearchHolderFragment;
 import dulleh.akhyou.Utils.AdapterClickListener;
 import dulleh.akhyou.Utils.Events.OpenAnimeEvent;
 import dulleh.akhyou.Utils.Events.SearchEvent;
@@ -32,14 +30,18 @@ import nucleus.view.NucleusSupportFragment;
 
 @RequiresPresenter(SearchPresenter.class)
 public class SearchFragment extends NucleusSupportFragment<SearchPresenter> implements AdapterClickListener<Anime> {
+    public int provider_type;
+
     private SwipeRefreshLayout refreshLayout;
     private SearchAdapter searchAdapter;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        if (bundle != null) {
+            provider_type = bundle.getInt(SearchHolderFragment.PROVIDER_TYPE_KEY, SearchHolderFragment.ANIME_RUSH);
+        }
         searchAdapter = new SearchAdapter(this);
-        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -67,7 +69,6 @@ public class SearchFragment extends NucleusSupportFragment<SearchPresenter> impl
     @Override
     public void onDestroy() {
         super.onDestroy();
-        SearchPresenter.searchResultsCache = null;
         MainApplication.getRefWatcher(getActivity()).watch(this);
     }
 
