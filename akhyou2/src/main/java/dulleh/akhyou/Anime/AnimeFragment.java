@@ -202,12 +202,12 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
 
     }
 
-    public void setAnime (Anime anime, boolean isInFavourites, boolean hasMajorColour) {
+    public void setAnime (Anime anime, boolean isInFavourites) {
         episodesAdapter.setAnime(anime.getEpisodes());
         setToolbarTitle(anime.getTitle());
 
         Picasso.with(getActivity()).invalidate(anime.getUrl());
-        if (!hasMajorColour) {
+        //if (!hasMajorColour) {
             final PaletteTransform paletteTransform = new PaletteTransform();
             Picasso.with(getActivity())
                     .load(anime.getImageUrl())
@@ -223,14 +223,14 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                             getPresenter().setMajorColour(paletteTransform.getPallete());
                         }
                     });
-        } else {
+        /*} else {
             Picasso.with(getActivity())
                 .load(anime.getImageUrl())
                 .error(R.drawable.placeholder)
                 .fit()
                 .centerCrop()
                 .into(drawerImage);
-        }
+        }*/
 
         drawerGenres.setText(anime.getGenresString());
         drawerDesc.setText(anime.getDesc());

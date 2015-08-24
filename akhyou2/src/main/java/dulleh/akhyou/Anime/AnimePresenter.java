@@ -68,7 +68,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         view.updateRefreshing();
         if (lastAnime != null) {
             if (lastAnime.getEpisodes() != null) {
-                view.setAnime(lastAnime, isInFavourites(), GeneralUtils.isAccentColour(lastAnime.getMajorColour()));
+                view.setAnime(lastAnime, isInFavourites());
             } else if (lastAnime.getTitle() != null) {
                 view.setToolbarTitle(lastAnime.getTitle());
             }
@@ -108,7 +108,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     public void onEvent (OpenAnimeEvent event) {
         lastAnime = event.anime;
         if (lastAnime != null && lastAnime.getEpisodes() != null) {
-            getView().setAnime(lastAnime, isInFavourites(),  GeneralUtils.isAccentColour(lastAnime.getMajorColour()));
+            getView().setAnime(lastAnime, isInFavourites());
             fetchAnime(true);
         } else {
             fetchAnime(false);
@@ -142,7 +142,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     public void onNext(Anime anime) {
                         lastAnime = anime;
                         isRefreshing = false;
-                        getView().setAnime(lastAnime, isInFavourites(), GeneralUtils.isAccentColour(lastAnime.getMajorColour()));
+                        getView().setAnime(lastAnime, isInFavourites());
                         EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
                         this.unsubscribe();
                     }
