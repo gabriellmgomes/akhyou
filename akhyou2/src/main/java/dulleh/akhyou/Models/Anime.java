@@ -9,6 +9,10 @@ import java.util.List;
 import dulleh.akhyou.MainApplication;
 
 public class Anime implements Parcelable{
+    public static final int ANIME_RUSH = 0;
+    public static final CharSequence ANIME_RUSH_TITLE = "ANIMERUSH";
+    public static final int ANIME_RAM = 1;
+    public static final CharSequence ANIME_RAM_TITLE = "ANIMERAM";
 
     // has to be here cos conflicts with V
     public Anime () {}
@@ -58,6 +62,7 @@ public class Anime implements Parcelable{
 
     // ---------------------------------------------------------------------------------- //
 
+    private Integer providerType; // if null: GeneralUtils.determineProviderType()
     private String title;
     private String desc;
     private String url;
@@ -70,6 +75,15 @@ public class Anime implements Parcelable{
     private List<Episode> episodes;
     // default to accent color
     private int majorColour = MainApplication.RED_ACCENT_RGB;
+
+    public Integer getProviderType() {
+        return providerType;
+    }
+
+    public Anime setProviderType(int providerType) {
+        this.providerType = providerType;
+        return this;
+    }
 
     public String getTitle() {
         return title;
@@ -85,7 +99,7 @@ public class Anime implements Parcelable{
     }
 
     public Anime setDesc(String desc) {
-        this.desc = desc;
+        this.desc = desc.trim();
         return this;
     }
 
@@ -94,7 +108,7 @@ public class Anime implements Parcelable{
     }
 
     public Anime setUrl(String url) {
-        this.url = url;
+        this.url = url.trim();
         return this;
     }
 
@@ -103,7 +117,7 @@ public class Anime implements Parcelable{
     }
 
     public Anime setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+        this.imageUrl = imageUrl.trim();
         return this;
     }
 
@@ -121,7 +135,7 @@ public class Anime implements Parcelable{
     }
 
     public Anime setGenresString(String genresString) {
-        this.genresString = genresString;
+        this.genresString = genresString.trim();
         return this;
     }
 
@@ -139,7 +153,7 @@ public class Anime implements Parcelable{
     }
 
     public Anime setDate(String date) {
-        this.date = date;
+        this.date = date.trim();
         return this;
     }
 
@@ -148,7 +162,7 @@ public class Anime implements Parcelable{
     }
 
     public Anime setAlternateTitle(String alternateTitle) {
-        this.alternateTitle = alternateTitle;
+        this.alternateTitle = alternateTitle.trim();
         return this;
     }
 
@@ -157,7 +171,7 @@ public class Anime implements Parcelable{
     }
 
     public Anime setStatus(String status) {
-        this.status = status;
+        this.status = status.trim();
         return this;
     }
 

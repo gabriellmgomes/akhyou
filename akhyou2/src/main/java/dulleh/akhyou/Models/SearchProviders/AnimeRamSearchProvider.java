@@ -11,11 +11,11 @@ import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Utils.GeneralUtils;
 import rx.exceptions.OnErrorThrowable;
 
-public class AnimeRushSearchProvider implements SearchProvider{
-    private static final String BASE_URL = "http://www.animerush.tv/search.php?searchquery=";
+public class AnimeRamSearchProvider implements SearchProvider{
+    private static final String BASE_URL = "http://www.animeram.me/anime-list/search/";
 
     @Override
-    public List<Anime> searchFor(String searchTerm){
+    public List<Anime> searchFor(String searchTerm) throws OnErrorThrowable {
 
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             throw OnErrorThrowable.from(new Throwable("Please enter a search term."));
@@ -37,41 +37,30 @@ public class AnimeRushSearchProvider implements SearchProvider{
     }
 
     @Override
-    public Element isolate (String document) {
-        return Jsoup
-                .parse(document, "http://www.animerush.tv/")
-                .select("div#left-column > div.amin_box2 > div.amin_box_mid")
-                .first();
+    public Element isolate(String document) {
+        return Jsoup.parse(document).select("div.overeverything > table > tbody > tr > td >table > tbody > tr > td > div > table > tbody > tr > td").first();
     }
 
     @Override
     public boolean hasSearchResults(Element element) throws OnErrorThrowable {
-        if (element.select("div.success").isEmpty()) {
-            return false;
-        }
-        return true;
+        return !element.select("td > div").text().contains("Nothing here");
     }
 
     private Elements seperateResults (Element searchResultsBox) {
-        return searchResultsBox.select("div.search-page_in_box_mid_link");
+        return searchResultsBox.children();
     }
-
     private List<Anime> parseResults (Elements searchResults) {
         List<Anime> animes = new ArrayList<>(searchResults.size());
         for (Element searchResult : searchResults) {
-            Anime anime = new Anime().setProviderType(Anime.ANIME_RUSH);
+            Anime anime = new Anime().setProviderType(Anime.ANIME_RAM);
 
-            anime.setTitle(searchResult.select("h3").text().trim()
-            /*
-            * Temporary fix for bug with AnimeRush search
-            * can reproduce bug by including spaces in between letters in your search
-            * E.G. "de tective co   nan"
-            */
-                    .replaceAll("<b>", "").replaceAll("</b>", ""));
+            Element titleAndUrl = searchResult.select("h3 > a[href]").first();
+            anime.setUrl(titleAndUrl.attr("href"));
+            anime.setTitle(titleAndUrl.text());
 
-            anime.setUrl(searchResult.select("a.highlightit").attr("href"))
-                    .setDesc(searchResult.select("p").text())
-                    .setImageUrl(searchResult.select("object.highlightz").attr("data"));
+            // image is low quality, so use large image they use on the stand-alone anime page
+            anime.setImageUrl(searchResult.select("img").first().attr("src").replace("94", "180"));
+            anime.setDesc(searchResult.select("div.popinfo").text());
 
             animes.add(anime);
         }

@@ -14,4 +14,6 @@ public interface SearchProvider {
 
     Element isolate (String document);
 
+    boolean hasSearchResults (Element element) throws OnErrorThrowable;
+
 }

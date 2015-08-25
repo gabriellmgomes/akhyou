@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.Search.Holder.Item.SearchFragment;
 
 public class SearchHolderAdapter extends FragmentStatePagerAdapter{
@@ -22,9 +23,12 @@ public class SearchHolderAdapter extends FragmentStatePagerAdapter{
 
         switch(position) {
             case 0:
-                args.putInt(SearchHolderFragment.PROVIDER_TYPE_KEY, SearchHolderFragment.ANIME_RUSH);
+                args.putInt(SearchHolderFragment.PROVIDER_TYPE_KEY, Anime.ANIME_RUSH);
                 break;
-            default: args.putInt(SearchHolderFragment.PROVIDER_TYPE_KEY, SearchHolderFragment.ANIME_RUSH);
+            case 1:
+                args.putInt(SearchHolderFragment.PROVIDER_TYPE_KEY, Anime.ANIME_RAM);
+                break;
+            default: args.putInt(SearchHolderFragment.PROVIDER_TYPE_KEY, Anime.ANIME_RUSH);
         }
 
         searchFragment.setArguments(args);
@@ -40,9 +44,9 @@ public class SearchHolderAdapter extends FragmentStatePagerAdapter{
     public CharSequence getPageTitle(int position) {
         switch(position) {
             case 0:
-                return SearchHolderFragment.ANIME_RUSH_TITLE;
+                return Anime.ANIME_RUSH_TITLE;
             case 1:
-                return "ALSO ANIMERUSH";
+                return Anime.ANIME_RAM_TITLE;
             default:
                 return null;
         }

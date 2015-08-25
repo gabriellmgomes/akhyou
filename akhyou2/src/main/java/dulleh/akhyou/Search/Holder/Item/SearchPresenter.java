@@ -2,10 +2,12 @@ package dulleh.akhyou.Search.Holder.Item;
 
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import dulleh.akhyou.Models.Anime;
+import dulleh.akhyou.Models.SearchProviders.AnimeRamSearchProvider;
 import dulleh.akhyou.Models.SearchProviders.AnimeRushSearchProvider;
 import dulleh.akhyou.Models.SearchProviders.SearchProvider;
 import dulleh.akhyou.Search.Holder.SearchHolderFragment;
@@ -31,9 +33,13 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
 
     // call in fragment onCreate()
     public void setProviderType (int providerType) {
+        this.providerType = providerType;
         switch (providerType) {
-            case SearchHolderFragment.ANIME_RUSH:
+            case Anime.ANIME_RUSH:
                 searchProvider = new AnimeRushSearchProvider();
+                break;
+            case Anime.ANIME_RAM:
+                searchProvider = new AnimeRamSearchProvider();
                 break;
             default: searchProvider = new AnimeRushSearchProvider();
         }
@@ -108,7 +114,7 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
                 .subscribe(new Subscriber<List<Anime>>() {
                     @Override
                     public void onNext(List<Anime> animes) {
-                        SearchHolderFragment.searchResultsCache = animes;
+                        SearchHolderFragment.searchResultsCache.set(providerType, animes);
                         isRefreshing = false;
                         getView().updateSearchResults();
                         this.unsubscribe();
@@ -123,7 +129,7 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
                     @Override
                     public void onError(Throwable e) {
                         isRefreshing = false;
-                        SearchHolderFragment.searchResultsCache.clear();
+                        SearchHolderFragment.searchResultsCache.set(providerType, new ArrayList<>(0));
                         getView().updateSearchResults();
                         postError(e);
                         this.unsubscribe();

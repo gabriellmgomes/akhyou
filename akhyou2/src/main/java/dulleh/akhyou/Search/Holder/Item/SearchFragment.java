@@ -31,18 +31,19 @@ import nucleus.view.NucleusSupportFragment;
 @RequiresPresenter(SearchPresenter.class)
 public class SearchFragment extends NucleusSupportFragment<SearchPresenter> implements AdapterClickListener<Anime> {
     private SwipeRefreshLayout refreshLayout;
-    private SearchAdapter searchAdapter = new SearchAdapter(this);
+    private SearchAdapter searchAdapter;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         // must be after ^ so that getPresenter() doesn't return null
-        getPresenter().setProviderType(getArguments().getInt(SearchHolderFragment.PROVIDER_TYPE_KEY, SearchHolderFragment.ANIME_RUSH));
+        getPresenter().setProviderType(getArguments().getInt(SearchHolderFragment.PROVIDER_TYPE_KEY, Anime.ANIME_RUSH));
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        searchAdapter = new SearchAdapter(this);
         View view = inflater.inflate(R.layout.search_fragment, container, false);
 
         RecyclerView searchResultsView = (RecyclerView) view.findViewById(R.id.recycler_view);

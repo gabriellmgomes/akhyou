@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import dulleh.akhyou.Models.Anime;
 import dulleh.akhyou.R;
 import dulleh.akhyou.Search.Holder.SearchHolderFragment;
@@ -18,10 +20,10 @@ import dulleh.akhyou.Utils.AdapterClickListener;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
     private Context context;
-    private AdapterClickListener<Anime> adapterClickListener;
+    private SearchFragment searchFragment;
 
-    public SearchAdapter (AdapterClickListener<Anime> adapterClickListener) {
-        this.adapterClickListener = adapterClickListener;
+    public SearchAdapter (SearchFragment searchFragment) {
+        this.searchFragment = searchFragment;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -49,7 +51,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
-        Anime anime = SearchHolderFragment.searchResultsCache.get(position);
+        Anime anime = getItem(position);
         viewHolder.titleView.setText(anime.getTitle());
         viewHolder.descView.setText(anime.getDesc());
 
@@ -64,14 +66,22 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         viewHolder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                adapterClickListener.onCLick(SearchHolderFragment.searchResultsCache.get(position), null);
+                searchFragment.onCLick(getItem(position), null);
             }
         });
 
     }
 
+    private List<Anime> searchResults () {
+        return SearchHolderFragment.searchResultsCache.get(searchFragment.getPresenter().providerType);
+    }
+
+    private Anime getItem (int position) {
+        return searchResults().get(position);
+    }
+
     @Override
     public int getItemCount() {
-        return SearchHolderFragment.searchResultsCache.size();
+        return searchResults().size();
     }
 }

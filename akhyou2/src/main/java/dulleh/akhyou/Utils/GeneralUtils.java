@@ -119,6 +119,16 @@ public class GeneralUtils {
         return colorInt == MainApplication.RED_ACCENT_RGB;
     }
 
+    public static int determineProviderType (String url) throws Exception{
+        url = url.toUpperCase();
+        if (url.contains(Anime.ANIME_RUSH_TITLE)) {
+            return Anime.ANIME_RUSH;
+        } else if (url.contains(Anime.ANIME_RAM_TITLE)) {
+            return Anime.ANIME_RAM;
+        }
+        throw new Exception("Unsupported source");
+    }
+
 /*
     public static void basicAsyncObservableVoid (BasicObservableable basicObservableable, String string) {
 

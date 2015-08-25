@@ -42,7 +42,9 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
             throw OnErrorThrowable.from(new Throwable("Failed to retrieve anime."));
         }
 
-        Anime anime = new Anime().setUrl(url);
+        Anime anime = new Anime()
+                .setProviderType(Anime.ANIME_RUSH)
+                .setUrl(url);
 
         animeBox = animeBox.select("div.amin_box2").first();
         anime.setTitle(parseForTitle());

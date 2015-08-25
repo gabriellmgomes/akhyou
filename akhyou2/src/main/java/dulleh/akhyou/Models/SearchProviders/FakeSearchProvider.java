@@ -7,14 +7,12 @@ import java.util.List;
 
 import dulleh.akhyou.Models.Anime;
 
-public class FakeSearchProvider implements SearchProvider{
+public class FakeSearchProvider {
 
-    @Override
     public List<Anime> searchFor(String searchTerm) {
         return fakeAnimes();
     }
 
-    @Override
     public Element isolate(String document) {
         return null;
     }

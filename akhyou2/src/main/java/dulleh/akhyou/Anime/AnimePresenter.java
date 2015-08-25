@@ -46,10 +46,6 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     protected void onCreate(Bundle savedState) {
         super.onCreate(savedState);
 
-        if (animeProvider == null) {
-            animeProvider = new AnimeRushAnimeProvider();
-        }
-
         // subscribe here (rather than in onTakeView() so that we don't receive
         // a stickied event every time the motherfucker takes the view.
         if (!EventBus.getDefault().isRegistered(this)) {
@@ -105,8 +101,35 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         }
     }
 
+    // intended to be used before lastAnime is updated and only when OpenAnimeEvent is called.
+    private Anime setAnimeProvider (Anime anime) {
+        switch (anime.getProviderType()) {
+            case Anime.ANIME_RUSH:
+                animeProvider = new AnimeRushAnimeProvider();
+                break;
+            case Anime.ANIME_RAM:
+                //animeProvider = new AnimeRamAnimeProvider();
+                animeProvider = new AnimeRushAnimeProvider();
+                break;
+            default:
+                try {
+                    anime.setProviderType(GeneralUtils.determineProviderType(anime.getUrl()));
+                    setAnimeProvider(anime);
+                    break;
+                } catch (Exception e) {
+                    postError(e);
+                }
+        }
+        return anime;
+    }
+
     public void onEvent (OpenAnimeEvent event) {
-        lastAnime = event.anime;
+        if (animeProvider ==  null || !event.anime.getProviderType().equals(lastAnime.getProviderType())) {
+            lastAnime = setAnimeProvider(event.anime);
+        } else {
+            lastAnime = event.anime;
+        }
+
         if (lastAnime != null && lastAnime.getEpisodes() != null) {
             getView().setAnime(lastAnime, isInFavourites());
             fetchAnime(true);
