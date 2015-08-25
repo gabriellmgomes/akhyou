@@ -19,17 +19,15 @@ public class SearchHolderAdapter extends FragmentStatePagerAdapter{
         Fragment searchFragment = new SearchFragment();
         Bundle args = new Bundle(1);
 
-        /*switch(position) {
-            case 0:
-                args.putInt(SEARCH_FRAGMENT_KEY, SearchHolderFragment.ANIME_RUSH);
-                break;
-            case 1:
-                args.putInt(SEARCH_FRAGMENT_KEY, SearchHolderFragment.ANIME_RUSH);
-                break;
-        }*/
-        args.putInt(SearchHolderFragment.PROVIDER_TYPE_KEY, SearchHolderFragment.ANIME_RUSH);
-        searchFragment.setArguments(args);
 
+        switch(position) {
+            case 0:
+                args.putInt(SearchHolderFragment.PROVIDER_TYPE_KEY, SearchHolderFragment.ANIME_RUSH);
+                break;
+            default: args.putInt(SearchHolderFragment.PROVIDER_TYPE_KEY, SearchHolderFragment.ANIME_RUSH);
+        }
+
+        searchFragment.setArguments(args);
         return searchFragment;
     }
 
@@ -42,9 +40,9 @@ public class SearchHolderAdapter extends FragmentStatePagerAdapter{
     public CharSequence getPageTitle(int position) {
         switch(position) {
             case 0:
-                return "ANIMERUSH";
+                return SearchHolderFragment.ANIME_RUSH_TITLE;
             case 1:
-                return "OTHER SOURCE";
+                return "ALSO ANIMERUSH";
             default:
                 return null;
         }

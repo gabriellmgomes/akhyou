@@ -30,18 +30,14 @@ import nucleus.view.NucleusSupportFragment;
 
 @RequiresPresenter(SearchPresenter.class)
 public class SearchFragment extends NucleusSupportFragment<SearchPresenter> implements AdapterClickListener<Anime> {
-    public int provider_type;
-
     private SwipeRefreshLayout refreshLayout;
-    private SearchAdapter searchAdapter;
+    private SearchAdapter searchAdapter = new SearchAdapter(this);
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        if (bundle != null) {
-            provider_type = bundle.getInt(SearchHolderFragment.PROVIDER_TYPE_KEY, SearchHolderFragment.ANIME_RUSH);
-        }
-        searchAdapter = new SearchAdapter(this);
+        // must be after ^ so that getPresenter() doesn't return null
+        getPresenter().setProviderType(getArguments().getInt(SearchHolderFragment.PROVIDER_TYPE_KEY, SearchHolderFragment.ANIME_RUSH));
     }
 
     @Nullable

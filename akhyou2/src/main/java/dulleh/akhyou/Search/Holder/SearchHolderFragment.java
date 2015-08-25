@@ -24,7 +24,9 @@ import dulleh.akhyou.Utils.Events.SearchEvent;
 
 public class SearchHolderFragment extends Fragment{
     public static final String PROVIDER_TYPE_KEY = "PROVIDER_TYPE_KEY";
+
     public static final int ANIME_RUSH = 0;
+    public static final CharSequence ANIME_RUSH_TITLE = "ANIMERUSH";
 
     public static List<Anime> searchResultsCache = new ArrayList<>(0);
 

@@ -117,7 +117,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
     public void fetchAnime (boolean updateCached) {
         isRefreshing = true;
-        if (getView() != null) {
+        if (getView() != null && !getView().isRefreshing()) {
             getView().updateRefreshing();
         }
 

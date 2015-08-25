@@ -21,6 +21,7 @@ import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
 public class SearchPresenter extends RxPresenter<SearchFragment> {
+    public int providerType;
 
     private Subscription subscription;
     private SearchProvider searchProvider;
@@ -28,15 +29,30 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
     private String searchTerm;
     public boolean isRefreshing;
 
+    // call in fragment onCreate()
+    public void setProviderType (int providerType) {
+        switch (providerType) {
+            case SearchHolderFragment.ANIME_RUSH:
+                searchProvider = new AnimeRushSearchProvider();
+                break;
+            default: searchProvider = new AnimeRushSearchProvider();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedState) {
         super.onCreate(savedState);
-
-        if (searchProvider == null) {
-            searchProvider = new AnimeRushSearchProvider();
-        }
-
         subscribe();
+
+        if (savedState != null) {
+            setProviderType(savedState.getInt(SearchHolderFragment.PROVIDER_TYPE_KEY, 0));
+        }
+    }
+
+    @Override
+    protected void onSave(Bundle state) {
+        super.onSave(state);
+        state.putInt(SearchHolderFragment.PROVIDER_TYPE_KEY, providerType);
     }
 
     @Override
@@ -72,7 +88,7 @@ public class SearchPresenter extends RxPresenter<SearchFragment> {
 
     public void search () {
         isRefreshing = true;
-        if (getView() != null) {
+        if (getView() != null && !getView().isRefreshing()) {
             getView().updateRefreshing();
         }
 
