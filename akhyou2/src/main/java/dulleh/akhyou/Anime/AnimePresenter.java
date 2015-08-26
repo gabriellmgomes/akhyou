@@ -103,22 +103,30 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
 
     // intended to be used before lastAnime is updated and only when OpenAnimeEvent is called.
     private Anime setAnimeProvider (Anime anime) {
-        switch (anime.getProviderType()) {
-            case Anime.ANIME_RUSH:
-                animeProvider = new AnimeRushAnimeProvider();
-                break;
-            case Anime.ANIME_RAM:
-                //animeProvider = new AnimeRamAnimeProvider();
-                animeProvider = new AnimeRushAnimeProvider();
-                break;
-            default:
-                try {
-                    anime.setProviderType(GeneralUtils.determineProviderType(anime.getUrl()));
-                    setAnimeProvider(anime);
+        if (anime.getProviderType() != null) {
+            switch (anime.getProviderType()) {
+                case Anime.ANIME_RUSH:
+                    animeProvider = new AnimeRushAnimeProvider();
                     break;
-                } catch (Exception e) {
-                    postError(e);
-                }
+                case Anime.ANIME_RAM:
+                    //animeProvider = new AnimeRamAnimeProvider();
+                    animeProvider = new AnimeRushAnimeProvider();
+                    break;
+                default:
+                    anime = determineProviderType(anime);
+            }
+        } else {
+            anime = determineProviderType(anime);
+        }
+        return anime;
+    }
+
+    private Anime determineProviderType (Anime anime) {
+        try {
+            anime.setProviderType(GeneralUtils.determineProviderType(anime.getUrl()));
+            setAnimeProvider(anime);
+        } catch (Exception e) {
+            postError(e);
         }
         return anime;
     }
@@ -187,17 +195,16 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                 });
     }
 
+    // getView() must not be null
     public Boolean isInFavourites() {
-        if (getView() != null) {
-            try {
-                //TODO: THIS IS TERRIBLE. >>> FIND A BETTER WAY
-                // PLEASE TELL ME THERE'S A BETTER WAY ;-;
-                return ((MainActivity) getView().getActivity()).getPresenter().getModel().isInFavourites(lastAnime.getUrl());
-            } catch (Exception e) {
-                postError(e);
-            }
+        try {
+            //TODO: THIS IS TERRIBLE. >>> FIND A BETTER WAY
+            // PLEASE TELL ME THERE'S A BETTER WAY ;-;
+            return ((MainActivity) getView().getActivity()).getPresenter().getModel().isInFavourites(lastAnime.getUrl());
+        } catch (Exception e) {
+            postError(e);
+            return null; // CAUSES NULL POINTER EXCEPTION
         }
-        return null;
     }
 
     public void setNeedToGiveFavourite (boolean bool) {
