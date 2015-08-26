@@ -23,17 +23,8 @@ import rx.exceptions.OnErrorThrowable;
 public class AnimeRushAnimeProvider implements AnimeProvider {
     private Element animeBox;
 
-    private static final String[] sourceList = {
-            "mp4upload",
-            "dailymotion",
-            "engine",
-            "youruplaod",
-            "vk",
-            "go"
-    };
-
     @Override
-    public Anime fetchAnime(String url) {
+    public Anime fetchAnime(String url) throws OnErrorThrowable{
         String body = GeneralUtils.getWebPage(url);
 
         animeBox = isolate(body);
@@ -71,7 +62,7 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
     }
 
     @Override
-    public List<Source> fetchSources(String url) {
+    public List<Source> fetchSources(String url) throws OnErrorThrowable{
         String body = GeneralUtils.getWebPage(url);
 
         Element sourcesBox = isolate(body)
@@ -178,43 +169,11 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
 
             String lowerCaseSourceTitle = titleBuilder.toString().toLowerCase();
 
-            for (int i = 0; i < sourceList.length; i++) {
-                if (lowerCaseSourceTitle.contains(sourceList[i])) {
-
-                    if (i == 0) {
-
-                        sources.add(addSourceTitleUrlProvider(e, titleAndUrlElement, source, new Mp4UploadSourceProvider(), titleBuilder));
-                        break;
-
-                    } else if (i == 1) {
-
-                        sources.add(addSourceTitleUrlProvider(e, titleAndUrlElement, source, new DailyMotionSourceProvider(), titleBuilder));
-                        break;
-
-                    } else if (i == 2) {
-
-                        sources.add(addSourceTitleUrlProvider(e, titleAndUrlElement, source, new EngineSourceProvider(), titleBuilder));
-                        break;
-
-                    } else if (i == 3) {
-
-                        sources.add(addSourceTitleUrlProvider(e, titleAndUrlElement, source, new YourUploadSourceProvider(), titleBuilder));
-                        break;
-
-                    } else if (i == 4) {
-
-                        sources.add(addSourceTitleUrlProvider(e, titleAndUrlElement, source, new VkSourceProvider(), titleBuilder));
-                        break;
-
-                    } else if (i == 5) {
-
-                        sources.add(addSourceTitleUrlProvider(e, titleAndUrlElement, source, new GoSourceProvider(), titleBuilder));
-                        break;
-
-                    }
-
-                }
+            SourceProvider sourceProvider = determineSourceProvider(lowerCaseSourceTitle);
+            if (sourceProvider != null) {
+                sources.add(addSourceTitleUrlProvider(e, titleAndUrlElement, source, sourceProvider, titleBuilder));
             }
+
 
 
 /*
@@ -254,6 +213,15 @@ public class AnimeRushAnimeProvider implements AnimeProvider {
         source.setTitle(titleBuilder.toString());
 
         return source;
+    }
+
+    private SourceProvider determineSourceProvider (String lowerCaseTitle) {
+        for (String sourceName : Source.sourceMap.keySet()) {
+            if (lowerCaseTitle.contains(sourceName)) {
+                return Source.sourceMap.get(sourceName);
+            }
+        }
+        return null;
     }
 
     private String parseForEmbedUrl (Element element) {

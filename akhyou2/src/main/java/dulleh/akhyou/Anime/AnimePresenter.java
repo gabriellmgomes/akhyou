@@ -10,7 +10,7 @@ import android.support.v7.graphics.Palette;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import dulleh.akhyou.MainApplication;
+import dulleh.akhyou.Models.AnimeProviders.AnimeRamAnimeProvider;
 import dulleh.akhyou.Models.AnimeProviders.AnimeRushAnimeProvider;
 import dulleh.akhyou.Models.AnimeProviders.AnimeProvider;
 import dulleh.akhyou.MainActivity;
@@ -101,7 +101,6 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
         }
     }
 
-    // intended to be used before lastAnime is updated and only when OpenAnimeEvent is called.
     private Anime setAnimeProvider (Anime anime) {
         if (anime.getProviderType() != null) {
             switch (anime.getProviderType()) {
@@ -109,31 +108,37 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
                     animeProvider = new AnimeRushAnimeProvider();
                     break;
                 case Anime.ANIME_RAM:
-                    //animeProvider = new AnimeRamAnimeProvider();
-                    animeProvider = new AnimeRushAnimeProvider();
+                    animeProvider = new AnimeRamAnimeProvider();
                     break;
                 default:
-                    anime = determineProviderType(anime);
+                    try {
+                        anime.setProviderType(GeneralUtils.determineProviderType(anime.getUrl()));
+                        setAnimeProvider(anime);
+                        break;
+                    } catch (Exception e) {
+                        postError(e);
+                    }
             }
         } else {
-            anime = determineProviderType(anime);
-        }
-        return anime;
-    }
-
-    private Anime determineProviderType (Anime anime) {
-        try {
-            anime.setProviderType(GeneralUtils.determineProviderType(anime.getUrl()));
-            setAnimeProvider(anime);
-        } catch (Exception e) {
-            postError(e);
+            try {
+                anime.setProviderType(GeneralUtils.determineProviderType(anime.getUrl()));
+                setAnimeProvider(anime);
+            } catch (Exception e) {
+                postError(e);
+            }
         }
         return anime;
     }
 
     public void onEvent (OpenAnimeEvent event) {
-        if (animeProvider ==  null || !event.anime.getProviderType().equals(lastAnime.getProviderType())) {
-            lastAnime = setAnimeProvider(event.anime);
+        if (animeProvider ==  null) {
+
+            if (lastAnime == null) {
+                lastAnime = setAnimeProvider(event.anime);
+            } else if (!event.anime.getProviderType().equals(lastAnime.getProviderType())) {
+                lastAnime = setAnimeProvider(event.anime);
+            }
+
         } else {
             lastAnime = event.anime;
         }

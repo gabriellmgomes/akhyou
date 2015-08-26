@@ -1,11 +1,34 @@
 package dulleh.akhyou.Models;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import dulleh.akhyou.Models.SourceProviders.AnimeBamSourceProvider;
+import dulleh.akhyou.Models.SourceProviders.DailyMotionSourceProvider;
+import dulleh.akhyou.Models.SourceProviders.EngineSourceProvider;
+import dulleh.akhyou.Models.SourceProviders.GoSourceProvider;
+import dulleh.akhyou.Models.SourceProviders.Mp4UploadSourceProvider;
 import dulleh.akhyou.Models.SourceProviders.SourceProvider;
+import dulleh.akhyou.Models.SourceProviders.YourUploadSourceProvider;
 
 public class Source implements Serializable{
+    public static final Map<String, SourceProvider> sourceMap = initSourceList();
+
+    private static Map<String, SourceProvider> initSourceList () {
+        Map<String, SourceProvider> sourceMap = new HashMap<>();
+
+        sourceMap.put("mp4upload", new Mp4UploadSourceProvider());
+        sourceMap.put("dailymotion", new DailyMotionSourceProvider());
+        sourceMap.put("engine", new EngineSourceProvider());
+        sourceMap.put("yourupload", new YourUploadSourceProvider());
+        sourceMap.put("go", new GoSourceProvider());
+        sourceMap.put("abvideo", new AnimeBamSourceProvider());
+
+        return sourceMap;
+    }
+
     private String title;
     private String pageUrl;
     private String embedUrl;
@@ -52,8 +75,9 @@ public class Source implements Serializable{
         return sourceProvider;
     }
 
-    public void setSourceProvider(SourceProvider sourceProvider) {
+    public Source setSourceProvider(SourceProvider sourceProvider) {
         this.sourceProvider = sourceProvider;
+        return this;
     }
 
 }
