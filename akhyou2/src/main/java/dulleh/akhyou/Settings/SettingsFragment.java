@@ -73,6 +73,17 @@ public class SettingsFragment extends Fragment {
 
         });
 
+        RelativeLayout licencesItem = (RelativeLayout) view.findViewById(R.id.licences_preference_item);
+        licencesItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(getActivity())
+                        .title(getString(R.string.licences_preference_summary))
+                        .customView(R.layout.licences_text_view, true)
+                        .show();
+            }
+        });
+
         return view;
     }
 

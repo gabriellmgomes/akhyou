@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp"
-    >
+    android:background="@drawable/settings_item_background" >
 
     <TextView
         android:id="@+id/preference_title_text"
@@ -12,7 +12,8 @@
         android:textSize="18sp"
         android:textColor="@android:color/white"
         android:singleLine="true"
-        android:maxLines="1" />
+        android:maxLines="1"
+        android:text="@string/licences_preference_title" />
 
     <TextView
         android:id="@+id/preference_summary_text"
@@ -20,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/preference_title_text"
         android:textSize="14sp"
-        android:textColor="@color/md_grey_400" />
+        android:textColor="@color/md_grey_400"
+        android:text="@string/licences_preference_summary"/>
 
 </RelativeLayout>

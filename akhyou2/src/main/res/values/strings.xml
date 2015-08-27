@@ -6,10 +6,15 @@
     <string name="favourites_item">Favourites</string>
     <string name="open_drawer">Open drawer</string>
     <string name="close_drawer">Close drawer</string>
+    <string name="imageContentDesc">Anime poster</string>
+
+    <string name="licences_preference_title">Licences</string>
+    <string name="licences_preference_summary">Thank you to these great open source projects.</string>
 
     <string name="theme_preference_key">theme_preference</string>
     <string name="theme_preference_title">Theme</string>
     <string name="theme_dialog_title">Themes</string>
+
     <string name="pink_theme">Pink</string>
     <string name="purple_theme">Purple</string>
     <string name="deep_purple_theme">Deep Purple</string>
@@ -27,8 +32,6 @@
     <string name="grey_theme">Grey</string>
     <string name="blue_grey_theme">Blue Grey</string>
 
-    <string name="imageContentDesc">Anime poster</string>
-
     <string name="sources">Sources</string>
     <string name="quality">Quality</string>
     <string name="stream">Stream</string>
@@ -45,8 +48,6 @@
     <string name="testSourceUrl">http://www6.mp4upload.com:182/d/sgxt5lsdz3b4quuolsuaypswicaihpuuhvjaxciv2zeqxpiig7zm6tgq/video.mp4</string>
     <string name="testGenre1">Mystery</string>
     <string name="testGenre2">School</string>
-
-    <string name="anime_rush">AnimeRush</string>
 
     <string name="status_title">Status:</string>
     <string name="alternate_title_title">Alternate Title:</string>

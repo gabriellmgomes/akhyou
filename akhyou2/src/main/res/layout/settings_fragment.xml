@@ -3,16 +3,32 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@color/background_material_dark">
 
-    <include layout="@layout/theme_preference_item"
-        android:id="@+id/theme_preference_item" />
-
-    <View
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/grey_darkestXX"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_below="@id/theme_preference_item" />
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <include layout="@layout/theme_preference_item"
+            android:id="@+id/theme_preference_item" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/grey_darkestXX"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp" />
+
+        <include layout="@layout/licences_preference_item"
+            android:id="@+id/licences_preference_item" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/grey_darkestXX"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp" />
+
+    </LinearLayout>
 
     <include layout="@layout/toolbar_shadow" />
 
