@@ -1,30 +1,24 @@
-![akhyou-try-try-again-sizetrim.png](https://bitbucket.org/repo/A9bqxR/images/1308259700-akhyou-try-try-again-sizetrim.png)
+# Akhyou!  
+**An anime streaming app for Android.**  
 
+IMAGEIMAGEIMAGEIMAGEIMAGE
 
-[Progress Pics](https://drive.google.com/folderview?id=0B7yspWl2OIHOfldGUjJzZEI2bDMyNTQyczkwR0Fqb3psbDlhVVZjekFLN1NOcVFZMUZUSzQ&usp=sharing)
-# README #
+Akhyou! is a material design android app in beta that scrapes streaming sites to provide users with an ad-free *intuitive* method of streaming and downloading the anime of their choice to the media player of their choice. Currently it scrapes two anime streaming sites but is built to be expandable. Upcoming features include *scrobbling* to [MyAnimeList](http://myanimelist.net/) / [Hummingbird.me](https://hummingbird.me/), enhanced browsing (new releases, genres, etc.) and a *proper* anime details screen.  
 
-There's an apprelease.apk in the files. Just download and have a go.
+There are no plans to release Akhyou! on the Play store in the future.  
 
-### What is this repository for? ###
+## Development  
 
-Akhyou! is an app in its infancy that lets you stream anime to your Android using players of your choice. Currently it scrapes data from [animerush.tv](animerush.tv) and supports *DailyMotion* *MP4Upload* and *YourUpload* with plans to include more anime sites and more hosts in the future.  
-There are no plans to release Akhyou! on Google Play at any stage in the future.
+The app is still in beta - though I (and some testers) have been using it for months. I welcome help with development, but, please, email me before you work on anything new.  
 
-### How do I get set up? ###
-
-- Currently everything's done almost solely in the MainActivity.class but there are plans to refactor to a proper, more easily maintainable architecture in the future.
-
-**Dependencies:**  
-- Jsoup  
-- Okhttp + Picasso  
-
-IDK what tests are lol.
-
-### Contribution guidelines ###
-
-Currently there's only dulleh and he knows what he's about. /s
-
-### Who do I talk to? ###
-
-dulleh.
+Awesome libraries this app uses:  
+1. [OkHttp](http://square.github.io/okhttp/)  
+2. [Picasso](http://square.github.io/picasso/)  
+3. [Nucleus](https://github.com/konmik/nucleus)  
+4. [EventBus](https://github.com/greenrobot/EventBus)  
+5. [RxAndroid](https://github.com/ReactiveX/RxAndroid)  
+6. [jsoup](http://jsoup.org/)  
+7. [Material Dialogs](https://github.com/afollestad/material-dialogs)  
+8. [Jackson](https://github.com/FasterXML/jackson)  
+9. [LeakCanary](https://github.com/square/leakcanary)  
+10. [Crashlyitcs/Fabric](http://try.crashlytics.com/sdk-android/)  
