@@ -27,12 +27,17 @@ public class SearchHolderFragment extends Fragment{
 
     public static List<List<Anime>> searchResultsCache = new ArrayList<>(1);
 
+    public SearchHolderFragment () {
+        if (searchResultsCache.isEmpty()) {
+            searchResultsCache.add(0, new ArrayList<>(0));
+            searchResultsCache.add(1, new ArrayList<>(1));
+        }
+    }
+
     ViewPager searchPager;
 
     @Override
     public void onCreate(Bundle bundle) {
-        searchResultsCache.add(0, new ArrayList<>(0));
-        searchResultsCache.add(1, new ArrayList<>(1));
         super.onCreate(bundle);
         setHasOptionsMenu(true);
     }

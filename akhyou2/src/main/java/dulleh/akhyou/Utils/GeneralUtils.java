@@ -74,7 +74,10 @@ public class GeneralUtils {
     }
 
     public static String formatError (Throwable e) {
-        return "Error: " + e.getMessage().replace("java.lang.Throwable:", "").trim();
+        if (e.getMessage() != null) {
+            return "Error: " + e.getMessage().replace("java.lang.Throwable:", "").trim();
+        }
+        return "An error occurred.";
     }
 
     public static String jwPlayerIsolate (String body) {

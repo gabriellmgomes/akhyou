@@ -14,6 +14,6 @@ public interface AnimeProvider {
 
     List<Source> fetchSources (String url) throws OnErrorThrowable;
 
-    Source fetchVideo (Source url) throws OnErrorThrowable;
+    Source fetchVideo (Source source) throws OnErrorThrowable;
 
 }

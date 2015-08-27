@@ -12,6 +12,7 @@ import dulleh.akhyou.Utils.GeneralUtils;
 import rx.exceptions.OnErrorThrowable;
 
 public class AnimeBamSourceProvider implements SourceProvider{
+
     @Override
     public List<Video> fetchSource(String embedPageUrl) {
 
@@ -36,9 +37,10 @@ public class AnimeBamSourceProvider implements SourceProvider{
             String response = okHttpClient.newCall(request).execute().toString();
             videos.add(new Video(null, response.substring(response.indexOf("url=") + 4, response.lastIndexOf(".mp4") + 4)));
         }catch (IOException io) {
-            throw OnErrorThrowable.from(new Throwable(io.getMessage()));
+            throw OnErrorThrowable.from(new Throwable("AnimeBam video retrieval failed.", io));
         }
 
         return videos;
     }
+
 }

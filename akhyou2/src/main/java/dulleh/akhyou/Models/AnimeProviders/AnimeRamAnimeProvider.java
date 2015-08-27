@@ -20,7 +20,7 @@ public class AnimeRamAnimeProvider implements AnimeProvider {
     public Anime fetchAnime(String url) throws OnErrorThrowable {
         String body = GeneralUtils.getWebPage(url);
 
-        Elements animeBox = isolate(body);
+        Element animeBox = isolate(body);
 
         Elements infoAndEpisodes = animeBox.select("tr > td > div.content");
 
@@ -59,19 +59,25 @@ public class AnimeRamAnimeProvider implements AnimeProvider {
     }
 
     @Override
-    public Source fetchVideo(Source url) throws OnErrorThrowable {
-        return null;
+    public Source fetchVideo(Source source) throws OnErrorThrowable {
+        String body = GeneralUtils.getWebPage(source.getPageUrl());
+
+        source.setEmbedUrl(parseForEmbedUrl(isolate(body)));
+
+        source.setVideos(source.getSourceProvider().fetchSource(source.getEmbedUrl()));
+
+        return source;
     }
 
-    private Elements isolate (String body) {
-        return Jsoup.parse(body).select("div.overeverything > table > tbody > tr > td > table > tbody");
+    private Element isolate (String body) {
+        return Jsoup.parse(body).select("div.overeverything > table > tbody > tr > td > table > tbody").first();
     }
 
     private boolean hasAnime (Elements elements) {
         return !elements.toString().toLowerCase().contains("page not found");
     }
 
-    private String parseForImageUrl (Elements animeBox) {
+    private String parseForImageUrl (Element animeBox) {
         return animeBox.select("td > img").attr("src");
     }
 
@@ -128,6 +134,10 @@ public class AnimeRamAnimeProvider implements AnimeProvider {
             }
         }
         return null;
+    }
+
+    private String parseForEmbedUrl (Element embedPageIsolated) {
+        return embedPageIsolated.select("tr > td > div.content > div > div > iframe[src]").last().attr("src");
     }
 
 }

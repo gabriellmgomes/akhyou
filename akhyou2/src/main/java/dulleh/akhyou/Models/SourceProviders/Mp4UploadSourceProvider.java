@@ -19,7 +19,7 @@ public class Mp4UploadSourceProvider implements SourceProvider{
         Element playerScript = Jsoup.parse(body).select("div#player_code > script").first();
 
         if (playerScript == null) {
-            throw OnErrorThrowable.from(new Throwable("Failed to fetch video."));
+            throw OnErrorThrowable.from(new Throwable("MP4Upload video retrieval failed."));
         }
 
         String elementHtml = playerScript.html();

@@ -38,6 +38,7 @@ import dulleh.akhyou.Models.Source;
 import dulleh.akhyou.Models.Video;
 import dulleh.akhyou.R;
 import dulleh.akhyou.Utils.AdapterClickListener;
+import dulleh.akhyou.Utils.BlurTransform;
 import dulleh.akhyou.Utils.Events.SearchSubmittedEvent;
 import dulleh.akhyou.Utils.PaletteTransform;
 import nucleus.factory.RequiresPresenter;
@@ -47,6 +48,7 @@ import nucleus.view.NucleusSupportFragment;
 public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implements AdapterClickListener<Episode> {
     private AnimeAdapter episodesAdapter;
     private SwipeRefreshLayout refreshLayout;
+    private SearchView searchView;
     //private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView drawerImage;
     private TextView drawerDesc;
@@ -55,8 +57,9 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     private TextView drawerDate;
     private TextView drawerStatus;
     private CheckBox drawerCheckBox;
-    //private BlurTransform blurTransform;
     private Integer position;
+
+    private BlurTransform blurTransform;
     //private float d;
 
     @Override
@@ -69,10 +72,10 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
         episodesAdapter = new AnimeAdapter(new ArrayList<>(), this, getResources().getColor(android.R.color.black), getResources().getColor(colorPrimary.resourceId));
         setHasOptionsMenu(true);
 
-/*
         blurTransform = new BlurTransform();
-        blurTransform.setContext(activity);
+        blurTransform.setContext(getActivity());
 
+/*
         d = activity.getResources().getDisplayMetrics().density;
 
         AppBarLayout appBarLayout =(AppBarLayout) activity.findViewById(R.id.app_bar_layout);
@@ -161,6 +164,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
     public void onDestroy() {
         super.onDestroy();
         setToolbarTitle(null);
+        searchView.setOnQueryTextListener(null);
         MainApplication.getRefWatcher(getActivity()).watch(this);
     }
 
@@ -175,7 +179,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
             searchItem = menu.findItem(R.id.search_item);
         }
 
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         searchView.setQueryHint(getString(R.string.search_item));
         searchView.setIconifiedByDefault(true);
@@ -211,8 +215,7 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
             Picasso.with(getActivity())
                     .load(anime.getImageUrl())
                     .error(R.drawable.placeholder)
-                            //.transform(blurTransform)
-                            //.transform(blurTransform)
+                            .transform(blurTransform)
                     .fit()
                     .centerCrop()
                     .transform(paletteTransform)
