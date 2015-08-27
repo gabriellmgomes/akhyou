@@ -215,9 +215,9 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
             Picasso.with(getActivity())
                     .load(anime.getImageUrl())
                     .error(R.drawable.placeholder)
-                            .transform(blurTransform)
                     .fit()
                     .centerCrop()
+                    .transform(blurTransform)
                     .transform(paletteTransform)
                     .into(drawerImage, new Callback.EmptyCallback() {
                         @Override

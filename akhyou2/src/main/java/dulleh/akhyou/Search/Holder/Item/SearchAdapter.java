@@ -60,7 +60,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                 .error(R.drawable.placeholder)
                 .fit()
                 .centerCrop()
-                .centerCrop()
                 .into(viewHolder.imageView);
 
         viewHolder.relativeLayout.setOnClickListener(new View.OnClickListener() {
