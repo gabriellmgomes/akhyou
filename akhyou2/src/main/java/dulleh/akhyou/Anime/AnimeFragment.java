@@ -217,7 +217,6 @@ public class AnimeFragment extends NucleusSupportFragment<AnimePresenter> implem
                     .error(R.drawable.placeholder)
                     .fit()
                     .centerCrop()
-                    .transform(blurTransform)
                     .transform(paletteTransform)
                     .into(drawerImage, new Callback.EmptyCallback() {
                         @Override
