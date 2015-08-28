@@ -87,6 +87,7 @@ public class AnimePresenter extends RxPresenter<AnimeFragment>{
     protected void onSave(Bundle state) {
         super.onSave(state);
         state.putParcelable(LAST_ANIME_BUNDLE_KEY, lastAnime);
+        EventBus.getDefault().post(new LastAnimeEvent(lastAnime));
     }
 
     private void unsubscribe () {
