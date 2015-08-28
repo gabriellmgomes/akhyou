@@ -7,8 +7,8 @@ Akhyou! is a material design android app in beta that scrapes streaming sites to
 
 There are no plans to release Akhyou! on the Play store in the future.  
 
-![Akhyou! Search Showcase](/captures/showcase_search.png "AKHYOU!") ![Akhyou! Episodes Showcase](/captures/showcase_episodes.png "AKHYOU!")
-![Akhyou! Anime Showcase](/captures/showcase_anime.png "AKHYOU!") ![Akhyou! Favourites Showcase](/captures/showcase_favourites.png "AKHYOU!")
+![Akhyou! Search Showcase](/captures/showcase_search_small.png "AKHYOU!") ![Akhyou! Episodes Showcase](/captures/showcase_episodes_small.png "AKHYOU!")
+![Akhyou! Anime Showcase](/captures/showcase_anime_small.png "AKHYOU!") ![Akhyou! Favourites Showcase](/captures/showcase_favourites_small.png "AKHYOU!")
 
 ## Development  
 
